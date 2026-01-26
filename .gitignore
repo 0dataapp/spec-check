@@ -1,3 +1,13 @@
+# BUILD
+**/__*/*
+
+# OS
+**/*.DS_Store
+
+# LOCAL
+.env*
+!.env-sample
 config.yml
+# RUBY
 vendor
 .bundle
