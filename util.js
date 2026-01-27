@@ -1,4 +1,4 @@
-const util = {
+const mod = {
 
   isEtag0: string => !string.match(/\D/i),
   isEtag1: string => string.trim().length && string.match(/^([^']|\\')*/i),
@@ -35,15 +35,15 @@ const util = {
       headers['Authorization'] = 'Bearer ' + State.token_rw;
 
     return {
-      get: path => util._fetch(util._url(State, path), {
+      get: path => mod._fetch(mod._url(State, path), {
         headers,
       }),
-      put: (path, body) => util._fetch(util._url(State, path), {
+      put: (path, body) => mod._fetch(mod._url(State, path), {
         headers,
         method: 'PUT',
         body: JSON.stringify(body),
       }),
-      delete: path => util._fetch(util._url(State, path), {
+      delete: path => mod._fetch(mod._url(State, path), {
         headers,
         method: 'DELETE',
       }),
@@ -52,4 +52,4 @@ const util = {
 
 };
 
-export default util;
+export default mod;
