@@ -23,15 +23,15 @@ const util = {
 
     return {
       get: path => fetch(util._url(State, path), {
-        headers: headers,
+        headers,
       }),
       put: (path, body) => fetch(util._url(State, path), {
-        headers: headers,
+        headers,
         method: 'PUT',
         body: JSON.stringify(body),
       }),
       delete: path => fetch(util._url(State, path), {
-        headers: headers,
+        headers,
         method: 'DELETE',
       }),
     };
