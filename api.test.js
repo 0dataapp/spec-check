@@ -66,6 +66,40 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
+		describe('read', () => {
+
+			Object.entries({
+				'without folder': Math.random().toString(),
+				'with folder': [
+					Math.random().toString(),
+					Math.random().toString(),
+				].join('/')
+			}).forEach(([key, path]) => {
+
+				it(`handles ${ key }`, async () => {
+					const item = {
+						[Math.random().toString()]: Math.random().toString(),
+					};
+					const put = await State.storage.put(path, item);
+					const res = await State.storage.get(path, item);
+					expect(res.status).toBe(200)
+					expect(res.headers.get('etag')).toSatisfy(State.version === 0 ? util.isEtag0 : util.isEtag1);
+					expect(res.headers.get('etag')).toBe(put.headers.get('etag'));
+					expect(res.headers.get('Content-Type')).toMatch('application/json');
+					
+					if (State.version >= 2)
+						expect(res.headers.get('Content-Length')).toBe(Buffer.from(JSON.stringify(item)).length);
+					
+					if (State.version >= 6)
+						expect(res.headers.get('Cache-control')).toBe('no-cache');
+
+					expect(await res.text()).toBe(JSON.stringify(item));
+				});
+
+			});
+
+		});
+
 	});
 
 });

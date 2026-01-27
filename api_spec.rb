@@ -197,22 +197,6 @@ describe "Requests" do
     end
   end
 
-  describe "GET a JSON object" do
-    before do
-      @res = do_get_request("#{CONFIG[:category]}/test-object-simple.json")
-    end
-
-    it "works" do
-      @res.code.must_equal 200
-      @res.headers[:etag].wont_be_nil
-      @res.headers[:etag].must_be_etag
-      @res.headers[:content_type].must_equal "application/json"
-      @res.headers[:content_length].must_equal "102"
-      @res.headers[:cache_control].must_equal "no-cache"
-      @res.body.must_equal '{"new": "object", "should_be": "large_enough", "to_trigger": "compression", "if_enabled": "on_server"}'
-    end
-  end
-
   describe "GET a JSON object while accepting compressed content" do
     before do
       @res = do_get_request("#{CONFIG[:category]}/test-object-simple.json",
