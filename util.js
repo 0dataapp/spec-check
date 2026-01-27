@@ -15,6 +15,11 @@ const util = {
     return json.links.filter(e => e.rel === 'remotestorage').shift();
   },
 
+  _fetch () {
+    // console.log(...arguments);
+    return fetch(...arguments);
+  },
+
   _url: (State, path) => [
     State.baseURL,
     State.scope,
@@ -30,15 +35,15 @@ const util = {
       headers['Authorization'] = 'Bearer ' + State.token_rw;
 
     return {
-      get: path => fetch(util._url(State, path), {
+      get: path => util._fetch(util._url(State, path), {
         headers,
       }),
-      put: (path, body) => fetch(util._url(State, path), {
+      put: (path, body) => util._fetch(util._url(State, path), {
         headers,
         method: 'PUT',
         body: JSON.stringify(body),
       }),
-      delete: path => fetch(util._url(State, path), {
+      delete: path => util._fetch(util._url(State, path), {
         headers,
         method: 'DELETE',
       }),
