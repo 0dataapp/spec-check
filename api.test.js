@@ -26,20 +26,20 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			}));
 
 			it('handles GET', async () => {
-				const response = await unauthorized().get(Math.random().toString());
-				expect(response.status).toBe(401);
+				const res = await unauthorized().get(Math.random().toString());
+				expect(res.status).toBe(401);
 			});
 
 			it('handles PUT', async () => {
-				const response = await unauthorized().put(Math.random().toString(), {
+				const res = await unauthorized().put(Math.random().toString(), {
 					[Math.random().toString()]: Math.random().toString(),
 				});
-				expect(response.status).toBe(401);
+				expect(res.status).toBe(401);
 			});
 
 			it('handles DELETE', async () => {
-				const response = await unauthorized().delete(Math.random().toString());
-				expect(response.status).toBe(401);
+				const res = await unauthorized().delete(Math.random().toString());
+				expect(res.status).toBe(401);
 			});
 
 		});
@@ -47,22 +47,22 @@ process.env.SERVER_URL.split(',').forEach(server => {
 		describe('create', () => {
 			
 			it('handles without folder', async () => {
-				const response = await State.storage.put(Math.random().toString(), {
+				const res = await State.storage.put(Math.random().toString(), {
 					[Math.random().toString()]: Math.random().toString(),
 				});
-				expect(response.status).toBeOneOf([200, 201])
-				expect(response.headers.get('etag')).toSatisfy(State.version === 0 ? util.isEtag0 : util.isEtag1);
+				expect(res.status).toBeOneOf([200, 201])
+				expect(res.headers.get('etag')).toSatisfy(State.version === 0 ? util.isEtag0 : util.isEtag1);
 			});
 
 			it('handles with folder', async () => {
-				const response = await State.storage.put([
+				const res = await State.storage.put([
 					Math.random().toString(),
 					Math.random().toString(),
 				].join('/'), {
 					[Math.random().toString()]: Math.random().toString(),
 				});
-				expect(response.status).toBeOneOf([200, 201])
-				expect(response.headers.get('etag')).toSatisfy(State.version === 0 ? util.isEtag0 : util.isEtag1);
+				expect(res.status).toBeOneOf([200, 201])
+				expect(res.headers.get('etag')).toSatisfy(State.version === 0 ? util.isEtag0 : util.isEtag1);
 			});
 
 		});
