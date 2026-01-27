@@ -15,6 +15,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 		beforeAll(async () => {
 			State.webfinger = await util.webfinger(State.server, State.account);
 			State.baseURL = State.webfinger.href;
+			State.version = parseInt(State.webfinger.type.match(/draft-dejong-remotestorage-(\d+)/).pop());
 			State.storage = util.storage(State);
 		});
 
@@ -42,6 +43,19 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			});
 
 		});
+
+		describe('PUT JSON object', () => {
+			
+			it('handles without folder', async () => {
+				const response = await State.storage.put(Math.random().toString(), {
+					[Math.random().toString()]: Math.random().toString(),
+				});
+				expect(response.status).toBeOneOf([200, 201])
+				expect(response.headers.get('etag')).toSatisfy(State.version === 0 ? util.isEtag0 : util.isEtag1);
+			});
+
+		});
+
 	});
 
 });

@@ -1,5 +1,10 @@
 const util = {
 
+  isEtag0: string => !string.match(/\D/i),
+  isEtag1: string => string.trim().length && string.match(/^([^']|\\')*/i),
+
+  clone: object => Object.assign({}, object),
+
   async webfinger (server, account) {
     const params = {
       resource: `acct:${ account }@${ (new URL(server)).hostname }`,

@@ -55,20 +55,6 @@ end
 
 describe "Requests" do
 
-  describe "PUT a JSON object" do
-    before do
-      @res = do_put_request("#{CONFIG[:category]}/test-object-simple.json",
-                            '{"new": "object", "should_be": "large_enough", "to_trigger": "compression", "if_enabled": "on_server"}',
-                            { content_type: "application/json" })
-    end
-
-    it "works" do
-      [200, 201].must_include @res.code
-      @res.headers[:etag].wont_be_nil
-      @res.headers[:etag].must_be_etag
-    end
-  end
-
   describe "PUT with nested folder" do
     before do
       @res = do_put_request("#{CONFIG[:category]}/some-subdir/nested-folder-object.json",
