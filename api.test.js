@@ -150,6 +150,55 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
+		describe('update', () => {
+
+			Object.entries({
+				'without folder': util.tid(),
+				'with folder': path.join(util.tid(), util.tid()),
+			}).forEach(([key, _path]) => {
+
+				describe(key, () => {
+
+					it('overwrites content', async () => {
+						const put1 = await State.storage.put(_path, util.document());
+
+						const item = util.document();
+						const put2 = await State.storage.put(_path, item);
+						expect(put2.status).toBeOneOf([200, 201]);
+						expect(put2.headers.get('etag')).toSatisfy(util.validEtag(State.version));
+						expect(put2.headers.get('etag')).not.toBe(put1.headers.get('etag'));
+						
+						const get = await State.storage.get(_path);
+						expect(get.headers.get('etag')).toBe(put2.headers.get('etag'));
+						
+						if (State.version >= 2)
+							expect(get.headers.get('Content-Length')).toBe(Buffer.from(JSON.stringify(item)).length.toString());
+
+						expect(await get.json()).toEqual(item);				
+					});
+
+					it('changes folder etags', async () => {
+						const put1 = await State.storage.put(_path, util.document());
+
+						const folder = path.dirname(_path) + '/';
+						const list1 = await State.storage.get(folder);
+
+						const put2 = await State.storage.put(_path, util.document());
+						
+						const list2 = await State.storage.get(folder);
+						expect(list2.headers.get('etag')).not.toBe(list1.headers.get('etag'));
+
+						const body = await list2.json();
+						const entry = (State.version >= 2 ? body.items : body)[path.basename(_path)];
+						expect(State.version >= 2 ? entry['ETag'] : `"${entry}"`).toBe(put2.headers.get('etag'));
+					});
+
+				});
+
+			});
+
+		});
+
 	});
 
 });

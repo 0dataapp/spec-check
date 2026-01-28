@@ -55,40 +55,6 @@ end
 
 describe "Requests" do
 
-  describe "updating that JSON object" do
-    before do
-      @old_outer_listing_res = do_get_request("#{CONFIG[:category]}/")
-      @old_listing_res = do_get_request("#{CONFIG[:category]}/some-subdir/")
-      old_listing = JSON.parse @old_listing_res.body
-      @old_item_info = old_listing["items"]["nested-folder-object.json"]
-
-      @res = do_put_request("#{CONFIG[:category]}/some-subdir/nested-folder-object.json",
-                            '{"foo": "bam"}',
-                            { content_type: "application/json" })
-      @item_etag = @res.headers[:etag]
-
-      @outer_listing_res = do_get_request("#{CONFIG[:category]}/")
-      @listing_res = do_get_request("#{CONFIG[:category]}/some-subdir/")
-      listing = JSON.parse @listing_res.body
-      @item_info = listing["items"]["nested-folder-object.json"]
-    end
-
-    it "works" do
-      # before runs for each block once, so we have to put all blocks into one
-      [200, 201].must_include @res.code
-      @item_etag.wont_be_nil
-      @item_etag.must_be_etag
-
-      # updates the file etags in the folder listing
-      @item_info["ETag"].must_equal @item_etag.delete('"')
-      @item_info["ETag"].wont_equal @old_item_info["ETag"]
-
-      # updates the folder etag
-      @listing_res.headers[:etag].wont_equal @old_listing_res.headers[:etag]
-      @outer_listing_res.headers[:etag].wont_equal @old_outer_listing_res.headers[:etag]
-    end
-  end
-
   describe "PUT with same name as existing directory" do
     it "returns a 409" do
       do_put_request("#{CONFIG[:category]}/some-subdir", '', {content_type: "text/plain"}) do |res|
