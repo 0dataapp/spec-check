@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { join } from 'path';
+import path from 'path';
 import util from './util.js'
 
 process.env.SERVER_URL.split(',').forEach(server => {
@@ -49,10 +49,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 			Object.entries({
 				'without folder': Math.random().toString(),
-				'with folder': [
-					Math.random().toString(),
-					Math.random().toString(),
-				].join('/')
+				'with folder': path.join(Math.random().toString(), Math.random().toString()),
 			}).forEach(([key, path]) => {
 
 				it(`handles ${ key }`, async () => {
@@ -71,10 +68,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 			Object.entries({
 				'without folder': Math.random().toString(),
-				'with folder': [
-					Math.random().toString(),
-					Math.random().toString(),
-				].join('/')
+				'with folder': path.join(Math.random().toString(), Math.random().toString()),
 			}).forEach(([key, path]) => {
 
 				it(`handles ${ key }`, async () => {
@@ -121,7 +115,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				const folder = util.tid() + '/';
 				const file = util.tid();
 				const item = util.document();
-				const put = await State.storage.put(join(folder, file), item);
+				const put = await State.storage.put(path.join(folder, file), item);
 				
 				const res = await State.storage.get(folder);
 				const body = await res.json();
@@ -142,7 +136,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			it('handles folder', async () => {
 				const folder = Math.random().toString() + '/';
 				const file = Math.random().toString();
-				const put = await State.storage.put(join(folder, folder, Math.random().toString()), {
+				const put = await State.storage.put(path.join(folder, folder, Math.random().toString()), {
 					[Math.random().toString()]: Math.random().toString(),
 				});
 				
