@@ -11,6 +11,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			account: process.env.ACCOUNT,
 			scope: process.env.TOKEN_SCOPE || 'api-test-suite',
 			token_rw: process.env.TOKEN_READ_WRITE,
+			token_global: process.env.TOKEN_GLOBAL,
 		};
 
 		beforeAll(async () => {
@@ -51,9 +52,14 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			}).forEach(([key, path]) => {
 
 				it(`handles ${ key }`, async () => {
-					const res = await State.storage.put(path, util.document());
-					expect(res.status).toBeOneOf([200, 201]);
-					expect(res.headers.get('etag')).toSatisfy(util.validEtag(State.version));
+					// const list1 = await State.storage.getRoot();
+
+					const put = await State.storage.put(path, util.document());
+					expect(put.status).toBeOneOf([200, 201]);
+					expect(put.headers.get('etag')).toSatisfy(util.validEtag(State.version));
+					
+					// const list2 = await State.storage.getRoot();
+					// expect(list2.headers.get('etag')).not.toBe(list1.headers.get('etag'));
 				});
 
 			});

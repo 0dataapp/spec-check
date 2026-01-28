@@ -49,6 +49,11 @@ const mod = {
       get: path => mod._fetch(mod._url(State, path), {
         headers,
       }),
+      getRoot: () => mod._fetch(`${ State.baseURL }/`, {
+        headers: Object.assign(mod.clone(headers), {
+          Authorization: 'Bearer ' + State.token_global,
+        }),
+      }),
       put: (path, body) => mod._fetch(mod._url(State, path), {
         headers,
         method: 'PUT',
