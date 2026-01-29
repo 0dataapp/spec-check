@@ -174,7 +174,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						if (State.version >= 2)
 							expect(get.headers.get('Content-Length')).toBe(Buffer.from(JSON.stringify(item)).length.toString());
 
-						expect(await get.json()).toEqual(item);				
+						expect(await get.json()).toEqual(item);
 					});
 
 					it('changes folder etags', async () => {
