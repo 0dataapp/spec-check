@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import path from 'path';
 import util from './util.js'
 
@@ -18,6 +18,19 @@ process.env.SERVER_URL.split(',').forEach(server => {
 		State.version = parseInt(State.webfinger.type.match(/draft-dejong-remotestorage-(\d+)/).pop());
 		State.storage = util.storage(State);
 	});
+
+	// afterAll(() => {
+	// 	const erase = async path => {
+	// 		const list = await State.storage.get(path);
+	// 		const body = await list.json();
+	// 		const entries = Object.entries(State.version >= 2 ? body.items : body);
+	// 		return Promise.all(entries.map(([key, value]) => {
+	// 			const _path = path + key;
+	// 			return _path.endsWith('/') ? erase(_path) : State.storage.delete(_path);
+	// 		}));
+	// 	};
+	// 	return erase('/');
+	// });
 
 	describe(new URL(server).host, () => {
 
