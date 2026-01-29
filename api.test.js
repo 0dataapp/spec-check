@@ -1,4 +1,4 @@
-import { suite, it, expect, beforeAll, afterAll } from 'vitest';
+import { suite, test, expect, beforeAll, afterAll } from 'vitest';
 import path from 'path';
 import util from './util.js'
 
@@ -40,17 +40,17 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				token_rw: undefined,
 			}));
 
-			it('handles GET', async () => {
+			test('handles GET', async () => {
 				const res = await unauthorized().get(util.tid());
 				expect(res.status).toBe(401);
 			});
 
-			it('handles PUT', async () => {
+			test('handles PUT', async () => {
 				const res = await unauthorized().put(util.tid(), util.document());
 				expect(res.status).toBe(401);
 			});
 
-			it('handles DELETE', async () => {
+			test('handles DELETE', async () => {
 				const res = await unauthorized().delete(util.tid());
 				expect(res.status).toBe(401);
 			});
@@ -64,13 +64,13 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				'with folder': path.join(util.tid(), util.tid()),
 			}).forEach(([key, path]) => {
 
-				it(`handles ${ key }`, async () => {
+				test(`handles ${ key }`, async () => {
 					const put = await State.storage.put(path, util.document());
 					expect(put.status).toBeOneOf([200, 201]);
 					expect(put.headers.get('etag')).toSatisfy(util.validEtag(State.version));
 				});
 
-				it.todo('changes parent etags', async () => {
+				test.todo('changes parent etags', async () => {
 					// const list1 = await State.storage.getRoot();
 
 					// previous test put…
@@ -90,7 +90,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				'with folder': path.join(util.tid(), util.tid()),
 			}).forEach(([key, path]) => {
 
-				it(`handles ${ key }`, async () => {
+				test(`handles ${ key }`, async () => {
 					const item = util.document();
 					const put = await State.storage.put(path, item);
 					const get = await State.storage.get(path);
@@ -114,7 +114,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		suite('list', () => {
 
-			it.todo('handles empty', async () => {
+			test.todo('handles empty', async () => {
 				const list = await State.storage.get('/');
 				expect(list.status).toBe(200);
 
@@ -128,7 +128,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				expect(body.items).toEqual({});
 			});
 
-			it('handles file', async () => {
+			test('handles file', async () => {
 				const folder = util.tid() + '/';
 				const file = util.tid();
 				const item = util.document();
@@ -150,7 +150,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				});
 			});
 
-			it('handles folder', async () => {
+			test('handles folder', async () => {
 				const folder = util.tid() + '/';
 				const file = util.tid();
 				const put = await State.storage.put(path.join(folder, folder, util.tid()), util.document());
@@ -176,7 +176,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 				suite(key, () => {
 
-					it('overwrites content', async () => {
+					test('overwrites content', async () => {
 						const put1 = await State.storage.put(_path, util.document());
 
 						const item = util.document();
@@ -194,7 +194,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						expect(await get.json()).toEqual(item);
 					});
 
-					it('changes folder etags', async () => {
+					test('changes folder etags', async () => {
 						const put1 = await State.storage.put(_path, util.document());
 
 						const folder = path.dirname(_path) + '/';
@@ -225,7 +225,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 				suite(key, () => {
 
-					it('removes', async () => {
+					test('removes', async () => {
 						const put = await State.storage.put(_path, util.document());
 
 						const del = await State.storage.delete(_path);
@@ -238,7 +238,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						expect(head.status).toBe(404);
 					});
 
-					it('changes folder etags', async () => {
+					test('changes folder etags', async () => {
 						const put = await State.storage.put(_path, util.document());
 						const put2 = await State.storage.put(_path + util.tid(), util.document());
 
@@ -251,7 +251,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						expect(list2.headers.get('etag')).not.toBe(list1.headers.get('etag'));
 					});
 
-					it.todo('changes parent folder etags', async () => {
+					test.todo('changes parent folder etags', async () => {
 						// continue from previous…
 						// const parent = path.dirname(folder) + '/';
 						// const list3 = parent === './' ? await State.storage.getRoot() : await State.storage.get();
