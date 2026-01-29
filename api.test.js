@@ -52,11 +52,15 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			}).forEach(([key, path]) => {
 
 				it(`handles ${ key }`, async () => {
-					// const list1 = await State.storage.getRoot();
-
 					const put = await State.storage.put(path, util.document());
 					expect(put.status).toBeOneOf([200, 201]);
 					expect(put.headers.get('etag')).toSatisfy(util.validEtag(State.version));
+				});
+
+				it.todo('changes parent etags', async () => {
+					// const list1 = await State.storage.getRoot();
+
+					// previous test put…
 					
 					// const list2 = await State.storage.getRoot();
 					// expect(list2.headers.get('etag')).not.toBe(list1.headers.get('etag'));
