@@ -203,6 +203,56 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
+		describe('delete', () => {
+
+			Object.entries({
+				'without folder': util.tid(),
+				'with folder': path.join(util.tid(), util.tid()),
+			}).forEach(([key, _path]) => {
+
+				describe(key, () => {
+
+					it('removes', async () => {
+						const put = await State.storage.put(_path, util.document());
+
+						const del = await State.storage.delete(_path);
+						expect(del.status).toBeOneOf([200, 204]);
+						
+						if (State.version >= 2)
+							expect(del.headers.get('etag')).toBe(put.headers.get('etag'));
+
+						const head = await State.storage.head(_path);
+						expect(head.status).toBe(404);
+					});
+
+					it('changes folder etags', async () => {
+						const put = await State.storage.put(_path, util.document());
+						const put2 = await State.storage.put(_path + util.tid(), util.document());
+
+						const folder = path.dirname(_path) + '/';
+						const list1 = await State.storage.get(folder);
+						
+						const del = await State.storage.delete(_path);
+
+						const list2 = await State.storage.get(folder);
+						expect(list2.headers.get('etag')).not.toBe(list1.headers.get('etag'));
+					});
+
+					it.todo('changes parent folder etags', async () => {
+						// continue from previous…
+						// const parent = path.dirname(folder) + '/';
+						// const list3 = parent === './' ? await State.storage.getRoot() : await State.storage.get();
+						// const body = await list3.json();
+						// const entry = (State.version >= 2 ? body.items : body)[folder];
+						// expect(State.version >= 2 ? entry['ETag'] : `"${entry}"`).toBe(list2.headers.get('etag'));
+					});
+
+				});
+
+			});
+
+		});
+
 	});
 
 });

@@ -545,20 +545,6 @@ describe "Requests" do
     end
   end
 
-  describe "DELETE objects" do
-    it "works" do
-      [ "test-object-simple.json", "Capture d'écran.jpg",
-        "some-subdir/nested-folder-object.json", "my-list" ].each do |key|
-        res = do_delete_request("#{CONFIG[:category]}/#{key}")
-
-        [200, 204].must_include res.code
-        do_head_request("#{CONFIG[:category]}/#{key}") do |response|
-          response.code.must_equal 404
-        end
-      end
-    end
-  end
-
   describe "DELETE a non-existing object" do
     it "returns a 404" do
       do_delete_request("#{CONFIG[:category]}/four-oh-four.html") do |response|

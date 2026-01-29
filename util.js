@@ -63,6 +63,10 @@ const mod = {
         headers,
         method: 'DELETE',
       }),
+      head: path => mod._fetch(mod._url(State, path), {
+        headers,
+        method: 'HEAD',
+      }),
     };
   },
 
