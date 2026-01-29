@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { suite, it, expect, beforeAll, afterAll } from 'vitest';
 import path from 'path';
 import util from './util.js'
 
@@ -32,9 +32,9 @@ process.env.SERVER_URL.split(',').forEach(server => {
 	// 	return erase('/');
 	// });
 
-	describe(new URL(server).host, () => {
+	suite(new URL(server).host, () => {
 
-		describe('unauthorized', () => {
+		suite('unauthorized', () => {
 
 			const unauthorized = () => util.storage(Object.assign(util.clone(State), {
 				token_rw: undefined,
@@ -57,7 +57,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
-		describe('create', () => {
+		suite('create', () => {
 
 			Object.entries({
 				'without folder': util.tid(),
@@ -83,7 +83,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
-		describe('read', () => {
+		suite('read', () => {
 
 			Object.entries({
 				'without folder': util.tid(),
@@ -112,7 +112,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
-		describe('list', () => {
+		suite('list', () => {
 
 			it.todo('handles empty', async () => {
 				const list = await State.storage.get('/');
@@ -167,14 +167,14 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
-		describe('update', () => {
+		suite('update', () => {
 
 			Object.entries({
 				'without folder': util.tid(),
 				'with folder': path.join(util.tid(), util.tid()),
 			}).forEach(([key, _path]) => {
 
-				describe(key, () => {
+				suite(key, () => {
 
 					it('overwrites content', async () => {
 						const put1 = await State.storage.put(_path, util.document());
@@ -216,14 +216,14 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
-		describe('delete', () => {
+		suite('delete', () => {
 
 			Object.entries({
 				'without folder': util.tid(),
 				'with folder': path.join(util.tid(), util.tid()),
 			}).forEach(([key, _path]) => {
 
-				describe(key, () => {
+				suite(key, () => {
 
 					it('removes', async () => {
 						const put = await State.storage.put(_path, util.document());
