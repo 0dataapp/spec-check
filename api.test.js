@@ -147,7 +147,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 			});
 
-			it('HEAD', async () => {
+			it('handles HEAD', async () => {
 				const path = util.tid();
 				const item = util.document();
 				const put = await State.storage.put(path, item);
