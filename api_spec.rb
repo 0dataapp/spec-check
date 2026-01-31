@@ -39,21 +39,6 @@ describe "Requests" do
     end
   end
 
-  describe "PUT with If-Match header to non-existing object" do
-    before do
-      do_put_request("#{CONFIG[:category]}/four-oh-four.json",
-                     '{"should": "not-happen"}',
-                     { content_type: "application/json",
-                       if_match: %Q("doesnotmatter") }) do |response|
-         @res = response
-       end
-    end
-
-    it "returns 412" do
-      @res.code.must_equal 412
-    end
-  end
-
   describe "GET a JSON object while accepting compressed content" do
     before do
       @res = do_get_request("#{CONFIG[:category]}/test-object-simple.json",

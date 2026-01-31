@@ -110,8 +110,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				});
 
 				it('returns 200', async () => {
-					const _path = join(util.tid(), util.tid());
-					const put = await State.storage.put(_path, util.document(), {
+					const put = await State.storage.put(join(util.tid(), util.tid()), util.document(), {
 						'If-None-Match': '*',
 					});
 					expect(put.status).toBeOneOf([200, 201]);
@@ -295,6 +294,13 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			});
 
 			describe('If-Match header', () => {
+
+				it('returns 412 if does not exist match', async () => {
+					const put = await State.storage.put(util.tid(), util.document(), {
+						'If-Match': Math.random().toString(),
+					});
+					expect(put.status).toBe(412);
+				});
 
 				it('returns 412 if no match', async () => {
 					const _path = join(util.tid(), util.tid());
