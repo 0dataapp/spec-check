@@ -7,18 +7,6 @@ def check_dir_listing_content_type(content_type)
   end
 end
 
-describe "PUT with same directory name as existing object" do
-  before do
-    do_put_request("#{CONFIG[:category]}/my-list", '', {content_type: "text/plain"})
-  end
-
-  it "returns a 409" do
-    do_put_request("#{CONFIG[:category]}/my-list/item", '', {content_type: "text/plain"}) do |res|
-      res.code.must_equal 409
-    end
-  end
-end
-
 describe "PUT with Content-Range" do
   it "returns a 400" do
     # https://tools.ietf.org/html/rfc7231#section-4.3.4

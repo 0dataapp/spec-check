@@ -118,12 +118,23 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				
 			});
 
-			describe('file path is existing folder', () => {
+			describe('target file path is an existing folder', () => {
 
 				it('returns 409', async () => {
 					const folder = util.tid();
 					await State.storage.put(join(folder, util.tid()), util.document());
 					const put = await State.storage.put(folder, util.document());
+					expect(put.status).toBe(State.version >= 2 ? 409 : 200);
+				});
+				
+			});
+
+			describe('folder in path is existing file', () => {
+
+				it('returns 409', async () => {
+					const folder = util.tid();
+					await State.storage.put(folder, util.document());
+					const put = await State.storage.put(join(folder, util.tid()), util.document());
 					expect(put.status).toBe(State.version >= 2 ? 409 : 200);
 				});
 				
