@@ -46,8 +46,8 @@ const mod = {
       headers['Authorization'] = `Bearer ${ State.token_rw }`;
 
     return {
-      get: path => mod._fetch(mod._url(State, path), {
-        headers,
+      get: (path, _headers = {}) => mod._fetch(mod._url(State, path), {
+        headers: Object.assign(mod.clone(headers), _headers),
       }),
       getRoot: () => mod._fetch(`${ State.baseURL }/`, {
         headers: Object.assign(mod.clone(headers), {

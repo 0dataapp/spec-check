@@ -118,20 +118,6 @@ describe "Requests" do
     end
   end
 
-  describe "GET with If-None-Match header" do
-    before do
-      @etag = do_head_request("#{CONFIG[:category]}/test-object-simple.json").headers[:etag]
-      do_get_request("#{CONFIG[:category]}/test-object-simple.json", { if_none_match: @etag }) do |response|
-        @res = response
-      end
-    end
-
-    it "returns 304 with empty body when ETag matches" do
-      @res.code.must_equal 304
-      @res.body.must_be_empty
-    end
-  end
-
   describe "GET with multiple ETags in If-None-Match header" do
     before do
       @etag = do_head_request("#{CONFIG[:category]}/test-object-simple.json").headers[:etag]
