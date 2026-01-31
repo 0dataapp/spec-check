@@ -9,20 +9,6 @@ end
 
 describe "listing" do
 
-  describe "GET empty directory listing" do
-    before do
-      @res = do_get_request("#{CONFIG[:category]}/does-not-exist/")
-      @listing = JSON.parse @res.body
-    end
-
-    it "works" do
-      @res.code.must_equal 200
-
-      @listing["@context"].must_equal "http://remotestorage.io/spec/folder-description"
-      @listing["items"].must_equal({})
-    end
-  end
-
   describe "HEAD directory listing" do
     before do
       @res = do_head_request("#{CONFIG[:category]}/")

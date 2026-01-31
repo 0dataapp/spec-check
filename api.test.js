@@ -226,6 +226,11 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				expect(body.items).toEqual({});
 			});
 
+			it('handles non-existing', async () => {
+				const list = await State.storage.get(`${ Math.random().toString() }/`);
+				expect(list.status).toBe(404);
+			});
+
 			it('handles file', async () => {
 				const folder = util.tid() + '/';
 				const file = util.tid();
