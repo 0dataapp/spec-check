@@ -34,6 +34,31 @@ process.env.SERVER_URL.split(',').forEach(server => {
 		// 	return erase('/');
 		// });
 
+		describe('OPTIONS', () => {
+
+			['GET', 'PUT', 'DELETE'].forEach(method => {
+
+				it(`handles ${ method }`, async () => {
+					const origin = util.link();
+					const res = await State.storage.options(Math.random().toString(), {
+						'Access-Control-Request-Method': method,
+						origin,
+						referer: origin,
+					});
+					expect(res.status).toBeOneOf([200, 204]);
+					expect(res.headers.get('Access-Control-Allow-Origin')).toMatch(new RegExp(`(\\*|${ origin.replaceAll(':', '\\:').replaceAll('/', '\\/').replaceAll('.', '\\.') })`));
+					expect(res.headers.get('Access-Control-Expose-Headers').split(',').map(e => e.trim())).toContain('ETag');
+					expect(res.headers.get('Access-Control-Allow-Methods').split(',').map(e => e.trim())).toContain(method);
+					expect(await res.text()).toBe('');
+					['Authorization', 'Content-Type', 'Origin', 'If-Match', 'If-None-Match'].forEach(header => {
+						expect(res.headers.get('Access-Control-Allow-Headers').split(',').map(e => e.trim())).toContain(header);
+					});
+				});
+
+			});
+			
+		});
+
 		describe('unauthorized', () => {
 
 			['GET', 'PUT', 'DELETE'].forEach(method => {

@@ -16,6 +16,8 @@ const mod = {
 
   clone: object => Object.assign({}, object),
 
+  link: () => `https://${ Math.random().toString(32) }`,
+
   async webfinger (server, account) {
     const params = {
       resource: `acct:${ account }@${ (new URL(server)).hostname }`,
@@ -66,6 +68,10 @@ const mod = {
       head: path => mod._fetch(mod._url(State, path), {
         headers,
         method: 'HEAD',
+      }),
+      options: (path, _headers = {}) => mod._fetch(mod._url(State, path), {
+        headers: Object.assign(mod.clone(headers), _headers),
+        method: 'OPTIONS',
       }),
     };
   },

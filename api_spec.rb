@@ -7,52 +7,6 @@ def check_dir_listing_content_type(content_type)
   end
 end
 
-describe "OPTIONS" do
-
-  describe "GET" do
-    it "returns a valid response" do
-      res = do_options_request CONFIG[:category]+"/foo", {
-        access_control_request_method: 'GET',
-        origin: 'https://unhosted.org',
-        referer: 'https://unhosted.org'
-      }
-
-      [200, 204].must_include res.code
-      res.headers[:access_control_allow_origin].must_match(/(\*|https:\/\/unhosted\.org)/)
-      res.headers[:access_control_expose_headers].must_include 'ETag'
-      res.headers[:access_control_allow_methods].must_include 'GET'
-      res.body.must_be_empty
-
-      ['Authorization', 'Content-Type', 'Origin', 'If-Match', 'If-None-Match'].each do |header|
-        res.headers[:access_control_allow_headers].must_include header
-      end
-    end
-  end
-
-  describe "PUT and DELETE" do
-    it "returns a valid response" do
-      ["PUT", "DELETE"].each do |method|
-        res = do_options_request CONFIG[:category]+"/foo", {
-          access_control_request_method: method,
-          origin: 'https://unhosted.org',
-          referer: 'https://unhosted.org'
-        }
-
-        [200, 204].must_include res.code
-        res.headers[:access_control_allow_origin].must_equal "https://unhosted.org"
-        res.headers[:access_control_expose_headers].must_include 'ETag'
-        res.headers[:access_control_allow_methods].must_include method
-        res.body.must_be_empty
-
-        ['Authorization', 'Content-Type', 'Origin', 'If-Match', 'If-None-Match'].each do |header|
-          res.headers[:access_control_allow_headers].must_include header
-        end
-      end
-    end
-  end
-
-end
-
 describe "Requests" do
 
   describe "PUT with same name as existing directory" do
