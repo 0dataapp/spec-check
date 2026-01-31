@@ -254,8 +254,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						const folder = path.dirname(_path) + '/';
 						const list1 = await State.storage.get(folder);
 						
-						const del = await State.storage.delete(_path);
-
+						await State.storage.delete(_path);
 						const list2 = await State.storage.get(folder);
 						expect(list2.headers.get('etag')).not.toBe(list1.headers.get('etag'));
 					});
