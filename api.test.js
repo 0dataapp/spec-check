@@ -142,11 +142,21 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 			describe('If-None-Match header', () => {
 
-				it('returns 304 if match', async () => {
+				it('returns 304 if single tag matches', async () => {
 					const _path = path.join(util.tid(), util.tid());
 					const put = await State.storage.put(_path, util.document());
 					const get = await State.storage.get(_path, {
 						'If-None-Match': put.headers.get('etag'),
+					});
+					expect(get.status).toBe(304);
+					expect(await get.text()).toBe('');
+				});
+
+				it('returns 304 if one of multiple tags matches', async () => {
+					const _path = path.join(util.tid(), util.tid());
+					const put = await State.storage.put(_path, util.document());
+					const get = await State.storage.get(_path, {
+						'If-None-Match': `${ Math.random().toString() },${ put.headers.get('etag') }`,
 					});
 					expect(get.status).toBe(304);
 					expect(await get.text()).toBe('');
