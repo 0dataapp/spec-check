@@ -212,23 +212,19 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		describe('list', () => {
 
-			it.todo('handles empty', async () => {
-				const list = await State.storage.get('/');
-				expect(list.status).toBe(200);
-
-				const body = await list.json();
-				expect(list.headers.get('etag')).toSatisfy(util.validEtag(State.version));
-				expect(list.headers.get('Content-Type')).toMatch('application/ld+json');
-
-				if (State.version >= 2)
-					expect(body['@context']).toBe('http://remotestorage.io/spec/folder-description');
-
-				expect(body.items).toEqual({});
-			});
-
 			it('handles non-existing', async () => {
 				const list = await State.storage.get(`${ Math.random().toString() }/`);
 				expect(list.status).toBe(404);
+			});
+
+			it('handles existing', async () => {
+				await State.storage.put(util.tid(), util.document());
+				
+				const list = await State.storage.head('/');
+				expect(list.status).toBe(200);
+
+				expect(list.headers.get('etag')).toSatisfy(util.validEtag(State.version));
+				expect(list.headers.get('Content-Type')).toMatch('application/ld+json');
 			});
 
 			it('handles file', async () => {
@@ -253,7 +249,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				});
 			});
 
-			it('handles folder', async () => {
+			it('handles subfolder', async () => {
 				const folder = util.tid() + '/';
 				const file = util.tid();
 				const put = await State.storage.put(join(folder, folder, util.tid()), util.document());

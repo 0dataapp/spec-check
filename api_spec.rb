@@ -9,19 +9,6 @@ end
 
 describe "listing" do
 
-  describe "HEAD directory listing" do
-    before do
-      @res = do_head_request("#{CONFIG[:category]}/")
-    end
-
-    it "works" do
-      [200, 204].must_include @res.code
-      @res.headers[:etag].must_be_etag
-      check_dir_listing_content_type(@res.headers[:content_type])
-      @res.body.must_equal ""
-    end
-  end
-
   describe "HEAD directory listing with multiple ETags in If-None-Match header" do
     before do
       @etag = do_head_request("#{CONFIG[:category]}/").headers[:etag]
