@@ -7,24 +7,6 @@ def check_dir_listing_content_type(content_type)
   end
 end
 
-describe "listing" do
-
-  describe "HEAD directory listing with multiple ETags in If-None-Match header" do
-    before do
-      @etag = do_head_request("#{CONFIG[:category]}/").headers[:etag]
-      do_get_request("#{CONFIG[:category]}/", { if_none_match: %Q("r2d2c3po", #{@etag}) }) do |response|
-        @res = response
-      end
-    end
-
-    it "returns 304 when one ETag matches" do
-      @res.code.must_equal 304
-      @res.body.must_be_empty
-    end
-  end
-
-end
-
 describe "DELETE" do
 
   describe "DELETE a non-existing object" do

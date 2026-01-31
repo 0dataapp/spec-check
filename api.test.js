@@ -264,6 +264,20 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				});
 			});
 
+			describe('If-None-Match header', () => {
+
+				it('returns 304 if single tag matches', async () => {
+					const put = await State.storage.put(util.tid(), util.document());
+					const head = await State.storage.head('/');
+					const get = await State.storage.get('/', {
+						'If-None-Match': `${ Math.random().toString() },${ head.headers.get('etag') }`,
+					});
+					expect(get.status).toBe(304);
+					expect(await get.text()).toBe('');
+				});
+				
+			});
+
 		});
 
 		describe('update', () => {
