@@ -7,7 +7,7 @@ def check_dir_listing_content_type(content_type)
   end
 end
 
-describe "files" do
+describe "binary files" do
   
   describe "PUT a JPG image" do
     before do
