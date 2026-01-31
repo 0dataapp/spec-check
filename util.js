@@ -43,7 +43,7 @@ const mod = {
     };
 
     if (State.token_rw)
-      headers['Authorization'] = 'Bearer ' + State.token_rw;
+      headers['Authorization'] = `Bearer ${ State.token_rw }`;
 
     return {
       get: path => mod._fetch(mod._url(State, path), {
