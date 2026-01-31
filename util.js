@@ -54,8 +54,8 @@ const mod = {
           Authorization: 'Bearer ' + State.token_global,
         }),
       }),
-      put: (path, body) => mod._fetch(mod._url(State, path), {
-        headers,
+      put: (path, body, _headers = {}) => mod._fetch(mod._url(State, path), {
+        headers: Object.assign(mod.clone(headers), _headers),
         method: 'PUT',
         body: JSON.stringify(body),
       }),

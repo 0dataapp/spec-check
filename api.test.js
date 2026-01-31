@@ -223,6 +223,30 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 			});
 
+			describe('If-Match header', () => {
+
+				it('returns 412 if no match', async () => {
+					const _path = path.join(util.tid(), util.tid());
+					await State.storage.put(_path, util.document());
+					const put = await State.storage.put(_path, util.document(), {
+						'If-Match': Math.random().toString(),
+					});
+					expect(put.status).toBe(412);
+				});
+
+				it('updates the object', async () => {
+					const _path = path.join(util.tid(), util.tid());
+					const put1 = await State.storage.put(_path, util.document());
+					const put2 = await State.storage.put(_path, util.document(), {
+						'If-Match': put1.headers.get('etag'),
+					});
+					expect(put2.status).toBeOneOf([200, 201]);
+					expect(put2.headers.get('etag')).toSatisfy(util.validEtag(State.version));
+					expect(put2.headers.get('etag')).not.toBe(put1.headers.get('etag'));
+				});
+				
+			});
+
 		});
 
 		describe('delete', () => {
@@ -253,7 +277,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 						const folder = path.dirname(_path) + '/';
 						const list1 = await State.storage.get(folder);
-						
+
 						await State.storage.delete(_path);
 						const list2 = await State.storage.get(folder);
 						expect(list2.headers.get('etag')).not.toBe(list1.headers.get('etag'));

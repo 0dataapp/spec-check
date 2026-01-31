@@ -85,37 +85,6 @@ describe "Requests" do
     end
   end
 
-  describe "PUT with matching If-Match header" do
-    before do
-      @etag = do_head_request("#{CONFIG[:category]}/test-object-simple.json").headers[:etag]
-      do_put_request("#{CONFIG[:category]}/test-object-simple.json",
-                     '{"new": "object", "should_be": "large_enough", "to_trigger": "compression", "if_enabled": "on_server"}',
-                     { content_type: "application/json", if_match: @etag }) do |response|
-         @res = response
-       end
-    end
-
-    it "updates the object" do
-      [200, 201].must_include @res.code
-      @res.headers[:etag].wont_be_nil
-      @res.headers[:etag].must_be_etag
-    end
-  end
-
-  describe "PUT with non-matching If-Match header" do
-    before do
-      do_put_request("#{CONFIG[:category]}/test-object-simple.json",
-                     '{"should": "not-happen"}',
-                     { content_type: "application/json", if_match: %Q("invalid") }) do |response|
-         @res = response
-       end
-    end
-
-    it "returns 412" do
-      @res.code.must_equal 412
-    end
-  end
-
   describe "PUT with If-Match header to non-existing object" do
     before do
       do_put_request("#{CONFIG[:category]}/four-oh-four.json",
