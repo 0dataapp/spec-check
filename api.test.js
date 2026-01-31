@@ -36,23 +36,15 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		describe('unauthorized', () => {
 
-			const unauthorized = () => util.storage(Object.assign(util.clone(State), {
-				token_rw: undefined,
-			}));
+			['GET', 'PUT', 'DELETE'].forEach(method => {
 
-			it('handles GET', async () => {
-				const res = await unauthorized().get(util.tid());
-				expect(res.status).toBe(401);
-			});
+				it(`handles ${ method }`, async () => {
+					const res = await util.storage(Object.assign(util.clone(State), {
+						token_rw: undefined,
+					}))[method.toLowerCase()](util.tid(), method === 'PUT' ? util.document() : undefined);
+					expect(res.status).toBe(401);
+				});
 
-			it('handles PUT', async () => {
-				const res = await unauthorized().put(util.tid(), util.document());
-				expect(res.status).toBe(401);
-			});
-
-			it('handles DELETE', async () => {
-				const res = await unauthorized().delete(util.tid());
-				expect(res.status).toBe(401);
 			});
 
 		});
