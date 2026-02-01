@@ -140,7 +140,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				
 			});
 
-			describe('PUT with Content-Range', () => {
+			describe('Content-Range header', () => {
 
 				// https://tools.ietf.org/html/rfc7231#section-4.3.4
 
