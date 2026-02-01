@@ -75,7 +75,7 @@ const mod = {
 		server: '$SERVER_URL',
 		account: '$ACCOUNT',
 		scope: '$TOKEN_SCOPE',
-		token_rw: '$TOKEN_READ_WRITE',
+		token_read_write: '$TOKEN_READ_WRITE',
 	},
 
 	target: {},
@@ -90,7 +90,7 @@ const mod = {
 		}
 	},
 
-	async token_rw () {
+	async token_read_write () {
 		const meta = mod._webfinger;
 		location.href = `${ meta.properties['auth-endpoint'] }?${ new URLSearchParams({
 			redirect_uri: location.href,
@@ -99,7 +99,7 @@ const mod = {
 			client_id: location.href,
 			state: mod.marshal({
 				account: mod.config.account,
-				purpose: 'token_rw',
+				purpose: 'token_read_write',
 			}),
 		}) }`
 	},
@@ -156,7 +156,7 @@ const mod = {
 		if (!mod.config.scope)
 			mod.config.scope = 'api-test-suite';
 
-		if (!mod.config.token_rw)
+		if (!mod.config.token_read_write)
 			window.oauth_rw.disabled = true;
 
 		const params = Object.fromEntries(new window.URLSearchParams(window.location.hash.slice(1)));
@@ -196,7 +196,7 @@ window.mod = mod;
 <dd id="scope">$TOKEN_SCOPE</dd>
 
 <dt>TOKEN_READ_WRITE</dt>
-<dd id="token_rw">$TOKEN_READ_WRITE</dd>
+<dd id="token_read_write">$TOKEN_READ_WRITE</dd>
 
 <div id="nostate">
 	<hr>
@@ -204,7 +204,7 @@ window.mod = mod;
 	<dt><button onclick="mod.webfinger()">webfinger</button></dt>
 	<dd><pre id="webfinger"></pre></dd>
 
-	<dt><button id="oauth_rw" onclick="mod.token_rw()" disabled>token_rw</button></dt>
+	<dt><button id="oauth_rw" onclick="mod.token_read_write()" disabled>token_read_write</button></dt>
 	<dd><pre id="webfinger"></pre></dd>
 </div>
 

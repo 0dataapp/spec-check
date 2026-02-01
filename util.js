@@ -44,8 +44,8 @@ const mod = {
       'Content-Type': 'application/json',
     };
 
-    if (State.token_rw)
-      headers['Authorization'] = `Bearer ${ State.token_rw }`;
+    if (State.token)
+      headers['Authorization'] = `Bearer ${ State.token }`;
 
     return {
       get: (path, _headers = {}) => mod._fetch(mod._url(State, path), {
@@ -53,7 +53,7 @@ const mod = {
       }),
       getRoot: () => mod._fetch(`${ State.baseURL }/`, {
         headers: Object.assign(mod.clone(headers), {
-          Authorization: 'Bearer ' + State.token_global,
+          Authorization: 'Bearer ' + State.token,
         }),
       }),
       put: (path, body, _headers = {}) => mod._fetch(mod._url(State, path), {

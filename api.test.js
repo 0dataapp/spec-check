@@ -9,7 +9,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 		server,
 		account: process.env.ACCOUNT,
 		scope: process.env.TOKEN_SCOPE || 'api-test-suite',
-		token_rw: process.env.TOKEN_READ_WRITE,
+		token_read_write: process.env.TOKEN_READ_WRITE,
 		token_global: process.env.TOKEN_GLOBAL,
 	};
 
@@ -19,7 +19,9 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			State.webfinger = await util.webfinger(State.server, State.account);
 			State.baseURL = State.webfinger.href;
 			State.version = parseInt(State.webfinger.type.match(/draft-dejong-remotestorage-(\d+)/).pop());
-			State.storage = util.storage(State);
+			State.storage = util.storage(Object.assign(util.clone(State), {
+				token: State.token_read_write,
+			}));
 		});
 
 		// afterAll(() => {
@@ -66,7 +68,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 				it(`rejects ${ method }`, async () => {
 					const res = await util.storage(Object.assign(util.clone(State), {
-						token_rw: undefined,
+						token: undefined,
 					}))[method.toLowerCase()](util.tid(), method === 'PUT' ? util.document() : undefined);
 					expect(res.status).toBe(401);
 				});
