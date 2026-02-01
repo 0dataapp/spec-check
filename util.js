@@ -59,7 +59,7 @@ const mod = {
       put: (path, body, _headers = {}) => mod._fetch(mod._url(State, path), {
         headers: Object.assign(mod.clone(headers), _headers),
         method: 'PUT',
-        body: JSON.stringify(body),
+        body: JSON.stringify(_headers).includes('charset=binary') ? body : JSON.stringify(body),
       }),
       delete: (path, _headers = {}) => mod._fetch(mod._url(State, path), {
         headers: Object.assign(mod.clone(headers), _headers),

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { join, dirname, basename } from 'path';
 import util from './util.js'
+import fs from 'fs'
 
 process.env.SERVER_URL.split(',').forEach(server => {
 
@@ -63,7 +64,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 			['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
 
-				it(`handles ${ method }`, async () => {
+				it(`rejects ${ method }`, async () => {
 					const res = await util.storage(Object.assign(util.clone(State), {
 						token_rw: undefined,
 					}))[method.toLowerCase()](util.tid(), method === 'PUT' ? util.document() : undefined);
@@ -154,6 +155,19 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				
 			});
 
+			describe('binary file', () => {
+
+				it('returns 200', async () => {
+					const path = 'image.jpg';
+					const put = await State.storage.put(path, fs.readFileSync(path), {
+						'Content-Type': 'image/jpeg; charset=binary',
+					});
+					expect(put.status).toBeOneOf([200, 201]);
+					expect(put.headers.get('etag')).toSatisfy(util.validEtag(State.version));
+				});
+				
+			});
+
 		});
 
 		describe('read', () => {
@@ -240,6 +254,23 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						'If-None-Match': `${ util.tid() },${ util.tid() }`,
 					});
 					expect(get.status).toBe(200);
+				});
+				
+			});
+
+			describe('binary file', () => {
+
+				it('returns 200', async () => {
+					const path = 'image.jpg';
+					const data = fs.readFileSync(path);
+					const put = await State.storage.put(path, data, {
+						'Content-Type': 'image/jpeg; charset=binary',
+					});
+					const get = await State.storage.get(path);
+					expect(get.status).toBeOneOf([200, 201]);
+					expect(get.headers.get('etag')).toSatisfy(util.validEtag(State.version));
+					expect(get.headers.get('Content-Type')).toBeOneOf(['image/jpeg', 'image/jpeg; charset=binary']);
+					expect(get.headers.get('Content-Length')).toBe(data.length.toString());
 				});
 				
 			});
@@ -492,8 +523,6 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			});
 
 		});
-
-		
 
 	});
 

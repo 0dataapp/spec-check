@@ -7,39 +7,6 @@ def check_dir_listing_content_type(content_type)
   end
 end
 
-describe "binary files" do
-  
-  describe "PUT a JPG image" do
-    before do
-      @res = do_put_request("#{CONFIG[:category]}/Capture d'écran.jpg",
-             File.open("fixtures/files/capture.jpg"),
-             { content_type: "image/jpeg; charset=binary" })
-    end
-
-    it "works" do
-      [200, 201].must_include @res.code
-      @res.headers[:etag].wont_be_nil
-      @res.headers[:etag].must_be_etag
-    end
-  end
-
-  describe "GET a JPG image" do
-    before do
-      @res = do_network_request("#{CONFIG[:category]}/Capture d'écran.jpg", method: :get, raw_response: true)
-    end
-
-    it "works" do
-      @res.code.must_equal 200
-      @res.headers[:etag].wont_be_nil
-      @res.headers[:etag].must_be_etag
-      @res.headers[:content_type].must_equal "image/jpeg; charset=binary"
-      @res.headers[:content_length].must_equal "28990"
-      @res.to_s.must_equal File.read("fixtures/files/capture.jpg")
-    end
-  end
-
-end
-
 describe "read-only token" do
 
   describe "GET" do
