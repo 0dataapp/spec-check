@@ -40,23 +40,6 @@ describe "public" do
     end
   end
 
-  describe "GET directory listing without a token" do
-    it "is not allowed" do
-      res = do_get_request("public/#{CONFIG[:category]}/", authorization: nil)
-
-      [401, 403].must_include res.code
-    end
-
-    it "doesn't expose if folder is empty" do
-      res = do_get_request("public/#{CONFIG[:category]}/", authorization: nil)
-      res2 = do_get_request("public/#{CONFIG[:category]}/foo/", authorization: nil)
-
-      res.code.must_equal res2.code
-      res.headers.must_equal res2.headers
-      res.body.must_equal res2.body
-    end
-  end
-
   describe "GET directory listing with a read-write category token" do
     it "works" do
       res = do_get_request("public/#{CONFIG[:category]}/")

@@ -659,6 +659,30 @@ process.env.SERVER_URL.split(',').forEach(server => {
 					expect(await res.text()).toBe(method === 'HEAD' ? '' : JSON.stringify(item));
 				});
 
+				it(`rejects list ${ method }`, async () => {
+					const folder = `${ util.tid() }/`;
+					const file = util.tid();
+					
+					const put = await util.storage(Object.assign(util.clone(State), {
+						scope: `public/${ State.scope }`,
+						token: State.token_read_write,
+					})).put(join(folder, file), util.document());
+
+					const list1 = await util.storage(Object.assign(util.clone(State), {
+						scope: `public/${ State.scope }`,
+						token: undefined,
+					}))[method.toLowerCase()](folder);
+					expect(list1.status).toBeOneOf([401, 403]);
+
+					const list2 = await util.storage(Object.assign(util.clone(State), {
+						scope: `public/${ State.scope }`,
+						token: undefined,
+					}))[method.toLowerCase()]('/');
+					expect(list2.status).toBe(list1.status);
+					expect(list2.headers).toMatchObject(list1.headers);
+					expect(await list2.text()).toBe(await list1.text());
+				});
+
 			});
 
 		});
