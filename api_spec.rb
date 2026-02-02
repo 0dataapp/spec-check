@@ -7,49 +7,6 @@ def check_dir_listing_content_type(content_type)
   end
 end
 
-describe "read-only token" do
-
-  describe "GET" do
-    it "works" do
-      res = do_get_request("#{CONFIG[:category]}/test-object-simple.json",
-                           authorization: "Bearer #{CONFIG[:read_only_token]}")
-
-      res.code.must_equal 200
-    end
-  end
-
-  describe "HEAD" do
-    it "works" do
-      res = do_head_request("#{CONFIG[:category]}/test-object-simple.json",
-                            authorization: "Bearer #{CONFIG[:read_only_token]}")
-
-      [200, 204].must_include res.code
-      res.body.must_be_empty
-    end
-  end
-
-  describe "PUT" do
-    it "fails" do
-      res = do_put_request("#{CONFIG[:category]}/test-object-simple-test.json",
-                           '{"new": "object"}',
-                           { content_type: "application/json",
-                             authorization: "Bearer #{CONFIG[:read_only_token]}" })
-
-      [401, 403].must_include res.code
-    end
-  end
-
-  describe "DELETE" do
-    it "fails" do
-      res = do_delete_request("#{CONFIG[:category]}/test-object-simple.json",
-                              authorization: "Bearer #{CONFIG[:read_only_token]}")
-
-      [401, 403].must_include res.code
-    end
-  end
-
-end
-
 describe "using base URL of a different user" do
 
   it "should fail" do

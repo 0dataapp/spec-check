@@ -10,6 +10,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 		account: process.env.ACCOUNT,
 		scope: process.env.TOKEN_SCOPE || 'api-test-suite',
 		token_read_write: process.env.TOKEN_READ_WRITE,
+		token_read_only: process.env.TOKEN_READ_ONLY,
 		token_global: process.env.TOKEN_GLOBAL,
 	};
 
@@ -71,6 +72,41 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						token: undefined,
 					}))[method.toLowerCase()](util.tid(), method === 'PUT' ? util.document() : undefined);
 					expect(res.status).toBe(401);
+				});
+
+			});
+
+		});		
+
+		describe('read-only token', () => {
+
+			['HEAD', 'GET'].forEach(method => {
+
+				it(`accepts ${ method }`, async () => {
+					const path = util.tid();
+					const item = util.document();
+					const put = await State.storage.put(path, item);
+
+					const res = await util.storage(Object.assign(util.clone(State), {
+						token: State.token_read_only,
+					}))[method.toLowerCase()](path);
+					expect(res.status).toBeOneOf([200, 204]);
+
+					expect(await res.text()).toBe(method === 'HEAD' ? '' : JSON.stringify(item));
+				});
+
+			});
+
+			['PUT', 'DELETE'].forEach(method => {
+
+				it(`rejects ${ method }`, async () => {
+					const path = util.tid();
+					const put = await State.storage.put(path, util.document());
+
+					const res = await util.storage(Object.assign(util.clone(State), {
+						token: State.token_read_only,
+					}))[method.toLowerCase()](path, method === 'PUT' ? util.document() : undefined);
+					expect(res.status).toBeOneOf([401, 403]);
 				});
 
 			});
