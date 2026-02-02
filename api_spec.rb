@@ -10,13 +10,6 @@ end
 describe "root directory" do
 
   describe "PUT a JSON object to root dir" do
-    it "fails with normal token" do
-      res = do_put_request("thisisbadpractice.json", '{"new": "object"}',
-                            { content_type: "application/json" })
-
-      [401, 403].must_include res.code
-    end
-
     it "works with root token" do
       res = do_put_request("thisisbadpractice.json", '{"new": "object"}',
                             { content_type: "application/json",

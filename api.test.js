@@ -573,6 +573,57 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
+		describe('root directory', () => {
+
+			describe('scope token', () => {
+
+				['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
+
+					it(`rejects ${ method }`, async () => {
+						const res = await util.storage(Object.assign(util.clone(State), {
+							token: State.token_read_write,
+							scope: '/',
+						}))[method.toLowerCase()](util.tid(), method === 'PUT' ? util.document() : undefined);
+						expect(res.status).toBeOneOf([401, 403]);
+					});
+
+				});
+
+				// ['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
+
+				// 	it(`accepts ${ method }`, async () => {
+				// 		const path = util.tid();
+				// 		const item = util.document();
+				// 		const put = await State.storage.put(path, item);
+
+				// 		const res = await util.storage(Object.assign(util.clone(State), {
+				// 			token: State.token_read_only,
+				// 		}))[method.toLowerCase()](path);
+				// 		expect(res.status).toBeOneOf([200, 204]);
+
+				// 		expect(await res.text()).toBe(method === 'HEAD' ? '' : JSON.stringify(item));
+				// 	});
+
+				// });
+
+				// ['PUT', 'DELETE'].forEach(method => {
+
+				// 	it(`rejects ${ method }`, async () => {
+				// 		const path = util.tid();
+				// 		const put = await State.storage.put(path, util.document());
+
+				// 		const res = await util.storage(Object.assign(util.clone(State), {
+				// 			token: State.token_read_only,
+				// 		}))[method.toLowerCase()](path, method === 'PUT' ? util.document() : undefined);
+				// 		expect(res.status).toBeOneOf([401, 403]);
+				// 	});
+
+				// });
+
+			});
+
+		});
+
 	});
 
 });
