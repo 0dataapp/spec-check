@@ -639,71 +639,75 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		describe('public folder', () => {
 
-			['HEAD', 'GET'].forEach(method => {
+			describe('without token', () => {
 
-				it(`accepts file ${ method }`, async () => {
-					const path = util.tid();
-					const item = util.document();
-					const put = await util.storage(Object.assign(util.clone(State), {
-						scope: `public/${ State.scope }`,
-						token: State.token_read_write,
-					})).put(path, item);
-					expect(put.status).toBeOneOf([200, 201]);
+				['HEAD', 'GET'].forEach(method => {
 
-					const res = await util.storage(Object.assign(util.clone(State), {
-						scope: `public/${ State.scope }`,
-						token: undefined,
-					}))[method.toLowerCase()](path);
-					expect(res.status).toBeOneOf(method === 'HEAD' ? [200, 204] : [200]);
+					it(`accepts file ${ method }`, async () => {
+						const path = util.tid();
+						const item = util.document();
+						const put = await util.storage(Object.assign(util.clone(State), {
+							scope: `public/${ State.scope }`,
+							token: State.token_read_write,
+						})).put(path, item);
+						expect(put.status).toBeOneOf([200, 201]);
 
-					expect(await res.text()).toBe(method === 'HEAD' ? '' : JSON.stringify(item));
+						const res = await util.storage(Object.assign(util.clone(State), {
+							scope: `public/${ State.scope }`,
+							token: undefined,
+						}))[method.toLowerCase()](path);
+						expect(res.status).toBeOneOf(method === 'HEAD' ? [200, 204] : [200]);
+
+						expect(await res.text()).toBe(method === 'HEAD' ? '' : JSON.stringify(item));
+					});
+
+					it(`rejects list ${ method }`, async () => {
+						const folder = `${ util.tid() }/`;
+						const file = util.tid();
+						
+						const put = await util.storage(Object.assign(util.clone(State), {
+							scope: `public/${ State.scope }`,
+							token: State.token_read_write,
+						})).put(join(folder, file), util.document());
+
+						const list1 = await util.storage(Object.assign(util.clone(State), {
+							scope: `public/${ State.scope }`,
+							token: undefined,
+						}))[method.toLowerCase()](folder);
+						expect(list1.status).toBeOneOf([401, 403]);
+
+						const list2 = await util.storage(Object.assign(util.clone(State), {
+							scope: `public/${ State.scope }`,
+							token: undefined,
+						}))[method.toLowerCase()]('/');
+						expect(list2.status).toBe(list1.status);
+						expect(list2.headers).toMatchObject(list1.headers);
+						expect(await list2.text()).toBe(await list1.text());
+					});
+
 				});
 
-				it(`rejects list ${ method }`, async () => {
-					const folder = `${ util.tid() }/`;
-					const file = util.tid();
-					
-					const put = await util.storage(Object.assign(util.clone(State), {
-						scope: `public/${ State.scope }`,
-						token: State.token_read_write,
-					})).put(join(folder, file), util.document());
+				['PUT', 'DELETE'].forEach(method => {
 
-					const list1 = await util.storage(Object.assign(util.clone(State), {
-						scope: `public/${ State.scope }`,
-						token: undefined,
-					}))[method.toLowerCase()](folder);
-					expect(list1.status).toBeOneOf([401, 403]);
+					it(`rejects ${ method }`, async () => {
+						const path = util.tid();
+						const item = util.document();
+						const put = await util.storage(Object.assign(util.clone(State), {
+							scope: `public/${ State.scope }`,
+							token: State.token_read_write,
+						})).put(path, item);
+						
+						const res = await util.storage(Object.assign(util.clone(State), {
+							scope: `public/${ State.scope }`,
+							token: undefined,
+						}))[method.toLowerCase()](path, method === 'PUT' ? util.document() : undefined);
+						expect(res.status).toBeOneOf([401, 403]);
+					});
 
-					const list2 = await util.storage(Object.assign(util.clone(State), {
-						scope: `public/${ State.scope }`,
-						token: undefined,
-					}))[method.toLowerCase()]('/');
-					expect(list2.status).toBe(list1.status);
-					expect(list2.headers).toMatchObject(list1.headers);
-					expect(await list2.text()).toBe(await list1.text());
 				});
 
 			});
-
-			['PUT', 'DELETE'].forEach(method => {
-
-				it(`rejects ${ method }`, async () => {
-					const path = util.tid();
-					const item = util.document();
-					const put = await util.storage(Object.assign(util.clone(State), {
-						scope: `public/${ State.scope }`,
-						token: State.token_read_write,
-					})).put(path, item);
-					
-					const res = await util.storage(Object.assign(util.clone(State), {
-						scope: `public/${ State.scope }`,
-						token: undefined,
-					}))[method.toLowerCase()](path, method === 'PUT' ? util.document() : undefined);
-					expect(res.status).toBeOneOf([401, 403]);
-				});
-
-			});
-
+			
 		});
 
 	});
