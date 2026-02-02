@@ -709,16 +709,6 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 			describe('with token', () => {
 
-				it('accepts PUT', async () => {
-					const path = util.tid();
-					const item = util.document();
-					const put = await util.storage(Object.assign(util.clone(State), {
-						scope: `public/${ State.scope }`,
-						token: State.token_read_write,
-					})).put(path, item);
-					expect(put.status).toBeOneOf([200, 201]);
-				});
-
 				['HEAD', 'GET'].forEach(method => {
 
 					it(`accepts list ${ method }`, async () => {
@@ -741,6 +731,28 @@ process.env.SERVER_URL.split(',').forEach(server => {
 							token: State.token_read_write,
 						}))[method.toLowerCase()]('/');
 						expect(list2.status).toBe(list1.status);
+					});
+
+				});
+
+				['PUT', 'DELETE'].forEach(method => {
+
+					it(`accepts ${ method }`, async () => {
+						const path = util.tid();
+						const item = util.document();
+						const put = await util.storage(Object.assign(util.clone(State), {
+							scope: `public/${ State.scope }`,
+							token: State.token_read_write,
+						})).put(path, item);
+
+						if (method === 'PUT')
+							return expect(put.status).toBeOneOf([200, 201]);
+						
+						const del = await util.storage(Object.assign(util.clone(State), {
+							scope: `public/${ State.scope }`,
+							token: State.token_read_write,
+						})).delete(path, method === 'PUT' ? util.document() : undefined);
+						expect(del.status).toBeOneOf([200, 204]);
 					});
 
 				});

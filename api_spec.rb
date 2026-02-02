@@ -19,12 +19,4 @@ describe "public" do
     end
   end
 
-  describe "DELETE with a read/write category token" do
-    it "works" do
-      res = do_delete_request("public/#{CONFIG[:category]}/test-object-simple.json")
-
-      [200, 204].must_include res.code
-    end
-  end
-
 end
