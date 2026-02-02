@@ -580,45 +580,58 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
 
 					it(`rejects ${ method }`, async () => {
+						const path = ['PUT', 'DELETE'].includes(method) ? util.tid() : '/';
 						const res = await util.storage(Object.assign(util.clone(State), {
 							token: State.token_read_write,
 							scope: '/',
-						}))[method.toLowerCase()](util.tid(), method === 'PUT' ? util.document() : undefined);
+						}))[method.toLowerCase()](path, method === 'PUT' ? util.document() : undefined);
 						expect(res.status).toBeOneOf([401, 403]);
 					});
 
 				});
 
-				// ['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
+			});
 
-				// 	it(`accepts ${ method }`, async () => {
-				// 		const path = util.tid();
-				// 		const item = util.document();
-				// 		const put = await State.storage.put(path, item);
+			describe('root token', () => {
 
-				// 		const res = await util.storage(Object.assign(util.clone(State), {
-				// 			token: State.token_read_only,
-				// 		}))[method.toLowerCase()](path);
-				// 		expect(res.status).toBeOneOf([200, 204]);
+				it.todo('lists HEAD', async () => {
+					const storage = util.storage(Object.assign(util.clone(State), {
+						token: State.token_global,
+						scope: '/',
+					}));
+					
+					const list = await storage.head('/');
+					expect(list.status).toBeOneOf([200, 204]);
+					expect(list.headers.get('etag')).toSatisfy(util.validEtag(State.version));
+					expect(list.headers.get('Content-Type')).toMatch('application/ld+json');
+					expect(await list.text()).toMatch('');
+				});
 
-				// 		expect(await res.text()).toBe(method === 'HEAD' ? '' : JSON.stringify(item));
-				// 	});
+				['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
 
-				// });
+					it.todo(`accepts ${ method }`, async () => {
+						const path = ['PUT', 'DELETE'].includes(method) ? util.tid() : '/';
 
-				// ['PUT', 'DELETE'].forEach(method => {
+						if (method === 'DELETE') {
+							const get = await storage.put(path, util.document());
+							expect(get.status).toBe(200);
+						};
 
-				// 	it(`rejects ${ method }`, async () => {
-				// 		const path = util.tid();
-				// 		const put = await State.storage.put(path, util.document());
+						const res = await storage[method.toLowerCase()](path, method === 'PUT' ? util.document() : undefined);
+						expect(res.status).toBeOneOf({
+							HEAD: [200, 204],
+							GET: [200],
+							PUT: [200, 201],
+							DELETE: [200],
+						}[method]);
 
-				// 		const res = await util.storage(Object.assign(util.clone(State), {
-				// 			token: State.token_read_only,
-				// 		}))[method.toLowerCase()](path, method === 'PUT' ? util.document() : undefined);
-				// 		expect(res.status).toBeOneOf([401, 403]);
-				// 	});
+						if (method === 'PUT') {
+							const get = await storage.get(path);
+							expect(get.status).toBe(200);
+						};
+					})
 
-				// });
+				});
 
 			});
 
