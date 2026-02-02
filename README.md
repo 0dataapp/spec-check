@@ -19,6 +19,8 @@ npm i
 | `TOKEN_SCOPE` (optional) | defaults to `api-test-suite` |
 | `ACCOUNT` | username of test account |
 | `TOKEN_READ_WRITE` | OAuth token with read/write access to the specified `CATEGORY` |
+| `TOKEN_READ_ONLY` | OAuth token with read-only access to the specified `CATEGORY` |
+| `TOKEN_GLOBAL` | OAuth token with read/write access to the root folder |
 
 
 1. Create a remoteStorage test account on the server you'd like to verify.
