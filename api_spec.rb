@@ -29,25 +29,6 @@ describe "public" do
     end
   end
 
-  describe "GET without a token" do
-    it "works" do
-      res = do_get_request("public/#{CONFIG[:category]}/test-object-simple.json",
-                           authorization: nil)
-
-      res.code.must_equal 200
-    end
-  end
-
-  describe "HEAD without a token" do
-    it "works" do
-      res = do_head_request("public/#{CONFIG[:category]}/test-object-simple.json",
-                            authorization: nil)
-
-      [200, 204].must_include res.code
-      res.body.must_be_empty
-    end
-  end
-
   describe "PUT without a token" do
     it "is not allowed" do
       res = do_put_request("public/#{CONFIG[:category]}/test-object-simple-test.json",

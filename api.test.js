@@ -637,6 +637,32 @@ process.env.SERVER_URL.split(',').forEach(server => {
 
 		});
 
+		describe('public', () => {
+
+			['HEAD', 'GET'].forEach(method => {
+
+				it(`accepts file ${ method }`, async () => {
+					const path = util.tid();
+					const item = util.document();
+					const put = await util.storage(Object.assign(util.clone(State), {
+						scope: `public/${ State.scope }`,
+						token: State.token_read_write,
+					})).put(path, item);
+					expect(put.status).toBeOneOf([200, 201]);
+
+					const res = await util.storage(Object.assign(util.clone(State), {
+						scope: `public/${ State.scope }`,
+						token: undefined,
+					}))[method.toLowerCase()](path);
+					expect(res.status).toBeOneOf(method === 'HEAD' ? [200, 204] : [200]);
+
+					expect(await res.text()).toBe(method === 'HEAD' ? '' : JSON.stringify(item));
+				});
+
+			});
+
+		});
+
 	});
 
 });
