@@ -7,20 +7,6 @@ def check_dir_listing_content_type(content_type)
   end
 end
 
-describe "using base URL of a different user" do
-
-  it "should fail" do
-    ["GET", "PUT", "DELETE"].each do |method|
-      res = do_network_request("#{CONFIG[:category]}/failwhale.png",
-                               method: method,
-                               base_url: CONFIG[:storage_base_url_other])
-
-      [401, 403].must_include res.code
-    end
-  end
-
-end
-
 describe "root directory" do
 
   describe "PUT a JSON object to root dir" do

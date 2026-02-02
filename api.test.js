@@ -63,7 +63,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 			
 		});
 
-		describe('unauthorized', () => {
+		describe('empty token', () => {
 
 			['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
 
@@ -72,6 +72,22 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						token: undefined,
 					}))[method.toLowerCase()](util.tid(), method === 'PUT' ? util.document() : undefined);
 					expect(res.status).toBe(401);
+				});
+
+			});
+
+		});		
+
+		describe('other user', () => {
+
+			['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
+
+				it(`rejects ${ method }`, async () => {
+					const res = await util.storage(Object.assign(util.clone(State), {
+						baseURL: State.baseURL.replace(/\/me$/, `/${ Date.now().toString(36) }`),
+						token: State.token_global,
+					}))[method.toLowerCase()](util.tid(), method === 'PUT' ? util.document() : undefined);
+					expect(res.status).toBeOneOf([401, 403]);
 				});
 
 			});
