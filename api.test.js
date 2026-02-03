@@ -265,6 +265,9 @@ process.env.SERVER_URL.split(',').forEach(server => {
 				if (State.version >= 2)
 					expect(head.headers.get('Content-Length')).toBe(Buffer.from(JSON.stringify(item)).length.toString());
 				
+				if (State.version <= 5)
+					expect(head.headers.get('Expires')).toBe('0');
+
 				if (State.version >= 6)
 					expect(head.headers.get('Cache-control')).toBe('no-cache');
 
