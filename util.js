@@ -1,11 +1,5 @@
 const mod = {
 
-  tid: () => Math.random().toString(36).replace('0.', new Date().toJSON().replace(/\D/g, '')),
-
-  document: (key, value) => ({
-    [key || mod.tid()]: value || mod.tid(),
-  }),
-
   isEtag0: string => !string.match(/\D/i),
   isEtag1: string => string.trim().length && string.match(/^([^']|\\')*/i),
   validEtag: version => version === 0 ? mod.isEtag0 : mod.isEtag1,
@@ -15,8 +9,6 @@ const mod = {
   validName: version => version === 0 ? mod.isName0 : mod.isName1,
 
   clone: object => Object.assign({}, object),
-
-  link: () => `https://${ Math.random().toString(32) }`,
 
   async webfinger (server, account) {
     const params = {
