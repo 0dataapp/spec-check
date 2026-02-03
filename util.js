@@ -7,6 +7,8 @@ const mod = {
   isName0: string => string.match(/[a-zA-Z0-9%-_]/i),
   isName1: string => string.trim().length && string.match(/[a-zA-Z0-9%-_\.\-\_]/i),
   validName: version => version === 0 ? mod.isName0 : mod.isName1,
+  
+  validDate: text => text.match(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} \d{2}:\d{2}:\d{2} GMT$/),
 
   clone: object => Object.assign({}, object),
 

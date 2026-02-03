@@ -28,6 +28,10 @@ process.env.SERVER_URL.split(',').forEach(server => {
 		if (State.version >= 6)
 			expect(res.headers.get('Cache-control')).toBe('no-cache');
 		
+		if (State.version >= 11) {
+			expect(Date.parse(res.headers.get('Last-Modified')) / 10000).toBeCloseTo(Date.now() / 10000, 0);
+			expect(res.headers.get('Last-Modified')).toSatisfy(util.validDate);
+		}
 	};
 
 	const checkListHeaders = ({entry, item}) => {
@@ -40,6 +44,11 @@ process.env.SERVER_URL.split(',').forEach(server => {
 		if (State.version >= 2 && item) {
 			expect(entry['Content-Length']).toBe(Buffer.from(JSON.stringify(item)).length);
 			expect(entry['Content-Type']).toBeTypeOf('string');
+		}
+
+		if (State.version >= 11) {
+			expect(Date.parse(entry['Last-Modified']) / 10000).toBeCloseTo(Date.now() / 10000, 0);
+			expect(entry['Last-Modified']).toSatisfy(util.validDate);
 		}
 	};
 
