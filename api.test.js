@@ -20,7 +20,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 		beforeAll(async () => {
 			State.webfinger = await util.webfinger(State.server, State.account);
 			State.baseURL = State.webfinger.href;
-			State.version = parseInt(State.webfinger.type.match(/draft-dejong-remotestorage-(\d+)/).pop());
+			State.version = parseInt((State.webfinger.type || State.webfinger.properties['http://remotestorage.io/spec/version']).match(/draft-dejong-remotestorage-(\d+)/).pop());
 			State.storage = util.storage(Object.assign(util.clone(State), {
 				token: State.token_read_write,
 			}));
