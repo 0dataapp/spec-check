@@ -86,7 +86,7 @@ const mod = {
 		window.webfinger.innerText = JSON.stringify(mod._webfinger = await util.webfinger.discover(mod.config.server, mod.config.account), null, ' ');
 
 		if (mod._webfinger) {
-			window.oauth_rw.removeAttribute('disabled')
+			window.oauth_read_write.removeAttribute('disabled')
 		}
 	},
 
@@ -157,7 +157,7 @@ const mod = {
 			mod.config.scope = 'api-test-suite';
 
 		if (!mod.config.token_read_write)
-			window.oauth_rw.disabled = true;
+			window.oauth_read_write.disabled = true;
 
 		const params = Object.fromEntries(new window.URLSearchParams(window.location.hash.slice(1)));
 		
@@ -167,9 +167,7 @@ const mod = {
 	  if (params.access_token)
 	  	mod.process(params);
 
-	  Object.keys(mod.config).forEach(e => {
-			window[e].innerText = mod.config[e];
-		});
+	  Object.keys(mod.config).forEach(e => window[e].innerHTML = mod.config[e] || '<b>[not set]</b>');
 	},
 
 };
@@ -187,25 +185,24 @@ window.mod = mod;
 <dl>
 
 <dt>SERVER_URL</dt>
-<dd id="server">$SERVER_URL</dd>
+<dd id="server">…</dd>
 
 <dt>ACCOUNT</dt>
-<dd id="account">$ACCOUNT</dd>
+<dd id="account">…</dd>
 
 <dt>TOKEN_SCOPE</dt>
-<dd id="scope">$TOKEN_SCOPE</dd>
+<dd id="scope">…</dd>
 
 <dt>TOKEN_READ_WRITE</dt>
-<dd id="token_read_write">$TOKEN_READ_WRITE</dd>
+<dd id="token_read_write">…</dd>
 
 <div id="nostate">
 	<hr>
 
-	<dt><button onclick="mod.webfinger()">webfinger</button></dt>
-	<dd><pre id="webfinger"></pre></dd>
+	<button onclick="mod.webfinger()">webfinger</button>
+	<pre id="webfinger"></pre>
 
-	<dt><button id="oauth_rw" onclick="mod.token_read_write()" disabled>token_read_write</button></dt>
-	<dd><pre id="webfinger"></pre></dd>
+	<p><button id="oauth_read_write" onclick="mod.token_read_write()" disabled>token_read_write</button></p>
 </div>
 
 <div id="target" class="hidden"></div>
