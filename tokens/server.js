@@ -16,6 +16,7 @@ require('http').createServer((req, res) => {
       'ACCOUNT',
       'TOKEN_SCOPE',
       'TOKEN_READ_WRITE',
+      'TOKEN_READ_ONLY',
     ].reduce((coll, e) => coll.replaceAll(`$${ e }`, process.env[e]), template));
 })
 .on('listening', () => console.info(`Listening on port ${ port }`))

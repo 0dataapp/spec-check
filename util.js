@@ -24,6 +24,8 @@ const mod = {
       return json.links.filter(e => ['remotestorage', 'http://tools.ietf.org/id/draft-dejong-remotestorage'].includes(e.rel)).shift();
     },
 
+    auth: link => link.properties['auth-endpoint'] || link.properties['http://tools.ietf.org/html/rfc6749#section-4.2'],
+
   },
 
   _fetch () {

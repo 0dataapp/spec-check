@@ -61,6 +61,10 @@ hr {
 	align-self: start;
 }
 
+#target textarea {
+	font-size: 80%;
+}
+
 .hidden {
 	display: none !important;
 }
@@ -76,6 +80,7 @@ const mod = {
 		account: '$ACCOUNT',
 		scope: '$TOKEN_SCOPE',
 		token_read_write: '$TOKEN_READ_WRITE',
+		token_read_only: '$TOKEN_READ_ONLY',
 	},
 
 	target: {},
@@ -86,13 +91,13 @@ const mod = {
 		window.webfinger.innerText = JSON.stringify(mod._webfinger = await util.webfinger.discover(mod.config.server, mod.config.account), null, ' ');
 
 		if (mod._webfinger) {
-			window.oauth_read_write.removeAttribute('disabled')
+			window.oauth_read_write.removeAttribute('disabled');
+			window.oauth_read_only.removeAttribute('disabled');
 		}
 	},
 
 	async token_read_write () {
-		const meta = mod._webfinger;
-		location.href = `${ meta.properties['auth-endpoint'] || meta.properties['http://tools.ietf.org/html/rfc6749#section-4.2'] }?${ new URLSearchParams({
+		location.href = `${ util.webfinger.auth(mod._webfinger) }?${ new URLSearchParams({
 			redirect_uri: location.href,
 			scope: `${ mod.config.scope }:rw`,
 			response_type: 'token',
@@ -100,6 +105,19 @@ const mod = {
 			state: mod.marshal({
 				account: mod.config.account,
 				purpose: 'token_read_write',
+			}),
+		}) }`
+	},
+
+	async token_read_only () {
+		location.href = `${ util.webfinger.auth(mod._webfinger) }?${ new URLSearchParams({
+			redirect_uri: location.href,
+			scope: `${ mod.config.scope }:r`,
+			response_type: 'token',
+			client_id: location.href,
+			state: mod.marshal({
+				account: mod.config.account,
+				purpose: 'token_read_only',
 			}),
 		}) }`
 	},
@@ -133,7 +151,10 @@ const mod = {
 			}));
 
 			window.target.appendChild(Object.assign(document.createElement('textarea'), {
-				value: `TOKEN_READ_WRITE="${ params.access_token }"`,
+				value: `${ {
+					token_read_write: 'TOKEN_READ_WRITE',
+					token_read_only: 'TOKEN_READ_ONLY',
+				}[params.state.purpose] }="${ params.access_token }"`,
 				disabled: true,
 			}));
 
@@ -158,6 +179,9 @@ const mod = {
 
 		if (!mod.config.token_read_write)
 			window.oauth_read_write.disabled = true;
+
+		if (!mod.config.token_read_only)
+			window.oauth_read_only.disabled = true;
 
 		const params = Object.fromEntries(new window.URLSearchParams(window.location.hash.slice(1)));
 		
@@ -196,6 +220,9 @@ window.mod = mod;
 <dt>TOKEN_READ_WRITE</dt>
 <dd id="token_read_write">…</dd>
 
+<dt>TOKEN_READ_ONLY</dt>
+<dd id="token_read_only">…</dd>
+
 <div id="nostate">
 	<hr>
 
@@ -203,6 +230,8 @@ window.mod = mod;
 	<pre id="webfinger"></pre>
 
 	<p><button id="oauth_read_write" onclick="mod.token_read_write()" disabled>token_read_write</button></p>
+	
+	<p><button id="oauth_read_only" onclick="mod.token_read_only()" disabled>token_read_only</button></p>
 </div>
 
 <div id="target" class="hidden"></div>
