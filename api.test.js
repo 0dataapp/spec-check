@@ -429,7 +429,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						expect(await get.json()).toEqual(item);
 					});
 
-					it('changes folder etags', async () => {
+					it('changes ancestor etags', async () => {
 						const put1 = await State.storage.put(path, stub.document());
 
 						const folder = `${ dirname(path) }/`;
@@ -513,7 +513,7 @@ process.env.SERVER_URL.split(',').forEach(server => {
 						expect(head.status).toBe(404);
 					});
 
-					it('changes folder etags', async () => {
+					it('changes ancestor etags', async () => {
 						const put = await State.storage.put(path, stub.document());
 
 						const folder = `${ dirname(path) }/`;
