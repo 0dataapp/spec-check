@@ -430,19 +430,19 @@ process.env.SERVER_URL.split(',').forEach(server => {
 					});
 
 					it('changes ancestor etags', async () => {
-						const put1 = await State.storage.put(path, stub.document());
+						await State.storage.put(path, stub.document());
 
 						const folder = `${ dirname(path) }/`;
 						const list1 = await State.storage.get(folder);
 
-						const put2 = await State.storage.put(path, stub.document());
+						const put = await State.storage.put(path, stub.document());
 						
 						const list2 = await State.storage.get(folder);
 						expect(list2.headers.get('etag')).not.toBe(list1.headers.get('etag'));
 
 						const body = await list2.json();
 						const entry = (State.version >= 2 ? body.items : body)[basename(path)];
-						expect(State.version >= 2 ? entry['ETag'] : `"${entry}"`).toBe(put2.headers.get('etag'));
+						expect(State.version >= 2 ? entry['ETag'] : `"${entry}"`).toBe(put.headers.get('etag'));
 					});
 
 				});
