@@ -81,6 +81,7 @@ const mod = {
 		scope: '$TOKEN_SCOPE',
 		token_read_write: '$TOKEN_READ_WRITE',
 		token_read_only: '$TOKEN_READ_ONLY',
+		token_global: '$TOKEN_GLOBAL',
 	},
 
 	target: {},
@@ -93,6 +94,7 @@ const mod = {
 		if (mod._webfinger) {
 			window.oauth_read_write.removeAttribute('disabled');
 			window.oauth_read_only.removeAttribute('disabled');
+			window.oauth_global.removeAttribute('disabled');
 		}
 	},
 
@@ -122,6 +124,19 @@ const mod = {
 		}) }`
 	},
 
+	async token_global () {
+		location.href = `${ util.webfinger.auth(mod._webfinger) }?${ new URLSearchParams({
+			redirect_uri: location.href,
+			scope: `${ util.webfinger.version(mod._webfinger) >= 2 ? '*' : 'root' }:rw`,
+			response_type: 'token',
+			client_id: location.href,
+			state: mod.marshal({
+				account: mod.config.account,
+				purpose: 'token_global',
+			}),
+		}) }`
+	},
+
 	reset () {
 		const uri = window.location.toString();
 
@@ -141,30 +156,32 @@ const mod = {
 	unmarshal: state => JSON.parse(atob(state)),
 
 	process (params) {
-		if (params.state.account && params.state.purpose) {
-			mod.target[params.state.purpose] = params.access_token
+		if (!params.state.account || !params.state.purpose)
+			return;
 
-			window.target.classList.remove('hidden');
+		mod.target[params.state.purpose] = params.access_token
 
-			window.target.appendChild(Object.assign(document.createElement('strong'), {
-				innerHTML: 'Add the following line to your <code>.env</code> file',
-			}));
+		window.target.classList.remove('hidden');
 
-			window.target.appendChild(Object.assign(document.createElement('textarea'), {
-				value: `${ {
-					token_read_write: 'TOKEN_READ_WRITE',
-					token_read_only: 'TOKEN_READ_ONLY',
-				}[params.state.purpose] }="${ params.access_token }"`,
-				disabled: true,
-			}));
+		window.target.appendChild(Object.assign(document.createElement('strong'), {
+			innerHTML: 'Add the following line to your <code>.env</code> file',
+		}));
 
-			window.target.appendChild(Object.assign(document.createElement('button'), {
-				innerText: 'clear state',
-				onclick: mod.reset,
-			}));
+		window.target.appendChild(Object.assign(document.createElement('textarea'), {
+			value: `${ {
+				token_read_write: 'TOKEN_READ_WRITE',
+				token_read_only: 'TOKEN_READ_ONLY',
+				token_global: 'TOKEN_GLOBAL',
+			}[params.state.purpose] }="${ params.access_token }"`,
+			disabled: true,
+		}));
 
-			window.nostate.classList.add('hidden');
-		}
+		window.target.appendChild(Object.assign(document.createElement('button'), {
+			innerText: 'clear state',
+			onclick: mod.reset,
+		}));
+
+		window.nostate.classList.add('hidden');
 	},
 
 	// lifecycle
@@ -182,6 +199,9 @@ const mod = {
 
 		if (!mod.config.token_read_only)
 			window.oauth_read_only.disabled = true;
+
+		if (!mod.config.token_global)
+			window.oauth_global.disabled = true;
 
 		const params = Object.fromEntries(new window.URLSearchParams(window.location.hash.slice(1)));
 		
@@ -223,6 +243,9 @@ window.mod = mod;
 <dt>TOKEN_READ_ONLY</dt>
 <dd id="token_read_only">…</dd>
 
+<dt>TOKEN_GLOBAL</dt>
+<dd id="token_global">…</dd>
+
 <div id="nostate">
 	<hr>
 
@@ -232,6 +255,8 @@ window.mod = mod;
 	<p><button id="oauth_read_write" onclick="mod.token_read_write()" disabled>token_read_write</button></p>
 	
 	<p><button id="oauth_read_only" onclick="mod.token_read_only()" disabled>token_read_only</button></p>
+	
+	<p><button id="oauth_global" onclick="mod.token_global()" disabled>token_global</button></p>
 </div>
 
 <div id="target" class="hidden"></div>
