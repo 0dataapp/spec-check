@@ -639,7 +639,7 @@ describe('root folder', () => {
 
 	describe('root token', () => {
 
-		it.todo('lists HEAD', async () => {
+		it.skip('lists HEAD', async () => {
 			const storage = util.storage(Object.assign(util.clone(State), {
 				token: State.token_global,
 				scope: '/',
@@ -654,7 +654,7 @@ describe('root folder', () => {
 
 		['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
 
-			it.todo(`accepts ${ method }`, async () => {
+			it.skip(`accepts ${ method }`, async () => {
 				const path = ['PUT', 'DELETE'].includes(method) ? stub.tid() : '/';
 
 				if (method === 'DELETE') {
@@ -807,7 +807,7 @@ describe('public folder', () => {
 
 		});
 
-		describe.todo('wrong scope', () => {
+		describe.skip('wrong scope', () => {
 
 			['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
 
