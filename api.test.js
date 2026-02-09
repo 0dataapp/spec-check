@@ -59,22 +59,22 @@ before(async () => {
 	}));
 });
 
-// after(() => {
-// 	const erase = async (path, storage) => {
-// 		const list = await storage.get(path);
-// 		const body = await list.json();
-// 		const entries = Object.entries(State.version >= 2 ? body.items : body);
-// 		await Promise.all(entries.map(([key, value]) => {
-// 			const _path = path + key;
-// 			return _path.endsWith('/') ? erase(_path, storage) : storage.delete(_path);
-// 		}));
-// 	};
+after(() => {
+	const erase = async (path, storage) => {
+		const list = await storage.get(path);
+		const body = await list.json();
+		const entries = Object.entries(State.version >= 2 ? body.items : body);
+		await Promise.all(entries.map(([key, value]) => {
+			const _path = path + key;
+			return _path.endsWith('/') ? erase(_path, storage) : storage.delete(_path);
+		}));
+	};
 
-// 	return erase('/', State.storage).then(() => erase('/', util.storage(Object.assign(util.clone(State), {
-// 			scope: `public/${ State.scope }`,
-// 			token: State.token_read_write,
-// 		}))));
-// });
+	return erase('/', State.storage).then(() => erase('/', util.storage(Object.assign(util.clone(State), {
+			scope: `public/${ State.scope }`,
+			token: State.token_read_write,
+		}))));
+});
 
 describe('OPTIONS', () => {
 
