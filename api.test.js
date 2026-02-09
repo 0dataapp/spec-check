@@ -121,8 +121,9 @@ describe('other user', () => {
 	['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
 
 		it(`rejects ${ method }`, async () => {
+			const handle = Math.random().toString(36).slice(2);
 			const res = await util.storage(Object.assign(util.clone(State), {
-				baseURL: State.baseURL.replace(/\/me$/, `/${ Date.now().toString(36) }`),
+				baseURL: State.baseURL.replace(new RegExp(`\\/${ process.env.ACCOUNT }$`), `/${ handle }`),
 				token: State.token_global,
 			}))[method.toLowerCase()](stub.tid(), method === 'PUT' ? stub.document() : undefined);
 			expect(res.status).toBeOneOf([401, 403]);
