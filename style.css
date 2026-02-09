@@ -1,0 +1,25 @@
+#mocha .result {
+	padding-top: 0;
+}
+
+#mocha-stats {
+	position: unset;
+
+	display: flex;
+}
+
+#mocha-stats .progress-element {
+	visibility: unset;
+}
+
+#mocha-stats li {
+	padding-top: unset;
+}
+
+.progress-contain > * {
+	position: unset !important;
+}
+
+.progress-contain :not(.progress-element) {
+	display: none !important;
+}
