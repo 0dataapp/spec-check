@@ -399,7 +399,7 @@ describe('list', () => {
 		expect(entries.length).toEqual(1);
 		entries.forEach(([key, entry]) => {
 			expect(key).toBe(file);
-			expect(State.version >= 2 ? entry['ETag'] : `"${entry}"`).toBe(put.headers.get('etag'));
+			expect(`"${ State.version >= 2 ? entry['ETag'] : entry }"`).toBe(put.headers.get('etag'));
 
 			checkListHeaders({
 				entry,
@@ -486,7 +486,7 @@ describe('update', () => {
 
 				const body = await list2.json();
 				const entry = (State.version >= 2 ? body.items : body)[basename(path)];
-				expect(State.version >= 2 ? entry['ETag'] : `"${entry}"`).toBe(put.headers.get('etag'));
+				expect(`"${ State.version >= 2 ? entry['ETag'] : entry }"`).toBe(put.headers.get('etag'));
 			});
 
 		});
