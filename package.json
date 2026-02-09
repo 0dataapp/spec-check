@@ -1,10 +1,10 @@
 {
   "name": "api-test-suite",
   "scripts": {
-    "test": "vitest",
+    "test": "mocha",
     "tokens": "nodemon --watch .env --watch ./tokens/server.js ./tokens/server.js"
   },
-  "dependencies": {
-    "vitest": "^4.0.18"
+  "devDependencies": {
+    "mocha": "^11.7.5"
   }
 }
