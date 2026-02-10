@@ -17,7 +17,9 @@ const mod = {
     window.oauth_read_only.removeAttribute('disabled');
     window.oauth_global.removeAttribute('disabled');
     
-    window.spec_version.value = util.webfinger.version(mod._webfinger);
+    mod.config.spec_version = window.spec_version.value = util.webfinger.version(mod._webfinger).toString();
+
+    mod.propagate(mod.config);
   },
 
   oauth: permission => location.href = `${ util.webfinger.auth(mod._webfinger) }?${ new URLSearchParams({
@@ -83,7 +85,7 @@ const mod = {
   // react
 
   react () {
-    window.webfinger.disabled = !!Object.entries(mod.config).filter(([key, value]) => !key.startsWith('token_') && !value).length;
+    window.webfinger.disabled = !!Object.entries(mod.config).filter(([key, value]) => !key.startsWith('token_') && !key.startsWith('spec_') && !value).length;
 
     window.oauth_read_write.disabled = !mod._webfinger;
     window.oauth_read_only.disabled = !mod._webfinger;
@@ -129,16 +131,18 @@ const mod = {
       token_read_write: '',
       token_read_only: '',
       token_global: '',
+      spec_version: '',
     };
   },
 
   propagate: config => window.process.env = Object.fromEntries(Object.entries(config).map(([key, value]) => [{
-      server: 'SERVER_URL',
-      account_handle: 'ACCOUNT_HANDLE',
-      scope: 'TOKEN_SCOPE',
-      token_read_write: 'TOKEN_READ_WRITE',
-      token_read_only: 'TOKEN_READ_ONLY',
-      token_global: 'TOKEN_GLOBAL',
+    server: 'SERVER_URL',
+    account_handle: 'ACCOUNT_HANDLE',
+    scope: 'TOKEN_SCOPE',
+    token_read_write: 'TOKEN_READ_WRITE',
+    token_read_only: 'TOKEN_READ_ONLY',
+    token_global: 'TOKEN_GLOBAL',
+    spec_version: 'SPEC_VERSION',
   }[key], value])),
 
   // lifecycle
