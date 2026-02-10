@@ -70,7 +70,7 @@ const mod = {
 
   // message
 
-  didChange (event) {
+  input (event) {
     mod.config[event.target.id] = event.target.value;
 
     mod._save();
@@ -171,7 +171,7 @@ const mod = {
     Object.keys(mod.config).forEach(e => {
       window[e].value = mod.config[e];
 
-      window[e].addEventListener('input', mod.didChange);
+      window[e].addEventListener('input', mod.input);
     });
 
     mod.react();
