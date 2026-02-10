@@ -75,8 +75,6 @@ const mod = {
 
     mod._save();
 
-    mod.initialize()
-
     mod.react();
   },
 
