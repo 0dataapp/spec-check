@@ -18,15 +18,15 @@ npm i
 
 ### Configure environment
 
-| name | description | example/default |
-| - | - | - |
-| `SERVER_URL` | server root url | `https://kosmos.org` |
-| `ACCOUNT_HANDLE` | username of test account | `tony` |
-| `TOKEN_SCOPE` (optional) | scope/category to test | `api-test-suite` |
-| `SPEC_VERSION` (optional) | draft version number | `22` |
-| `TOKEN_READ_WRITE` | OAuth token with read/write access to the specified `TOKEN_SCOPE` | … |
-| `TOKEN_READ_ONLY` | OAuth token with read-only access to the specified `TOKEN_SCOPE` | … |
-| `TOKEN_GLOBAL` | OAuth token with read/write access to the root folder | … |
+| name | description |
+| - | - |
+| `SERVER_URL` | server root URL (like `https://kosmos.org`) |
+| `ACCOUNT_HANDLE` | username of test account (like `tony`) |
+| `TOKEN_SCOPE` (optional) | scope/category to test (defaults to `api-test-suite`) |
+| `SPEC_VERSION` (optional) | draft version number (like `22`) |
+| `TOKEN_READ_WRITE` | OAuth token with read/write access to the specified `TOKEN_SCOPE` |
+| `TOKEN_READ_ONLY` | OAuth token with read-only access to the specified `TOKEN_SCOPE` |
+| `TOKEN_GLOBAL` | OAuth token with read/write access to the root folder |
 
 1. Create a remoteStorage test account on the server you'd like to verify.
 2. Copy `.env.example` to `.env` to set `SERVER_URL` and `ACCOUNT_HANDLE` from the previous step
