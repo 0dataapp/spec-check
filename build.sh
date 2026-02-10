@@ -3,6 +3,8 @@ cp * build
 
 files=(
   "node_modules/chai/index.js"
+  "node_modules/mocha/mocha.css"
+  "node_modules/mocha/mocha.js"
   "node_modules/path-browserify/index.js"
 )
 
