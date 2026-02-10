@@ -63,13 +63,22 @@ header img {
   width: 32px;
 }
 
-header a:not([aria-hidden="true"]) {
+header a:not([aria-hidden="true"]), footer a {
   opacity: 0.6;
 }
 
 header a {
   color: var(--body-color);
   text-decoration: none;
+}
+
+footer {
+	display: flex;
+	justify-content: center;
+}
+
+footer a {
+  color: var(--body-color);
 }
 
 /* mocha */
