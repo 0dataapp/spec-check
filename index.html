@@ -104,7 +104,9 @@
 
 <div id="mocha"></div>
 <script class="mocha-init">
-  mocha.setup('bdd');
+  mocha.setup({
+    ui: 'bdd',
+  });
   mocha.checkLeaks();
 </script>
 
