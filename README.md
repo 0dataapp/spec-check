@@ -49,7 +49,7 @@ ENV=kosmos npm test
 Start the static server:
 
 ```sh
-npm test
+npm start
 ```
 
 then visit http://localhost:8080.
