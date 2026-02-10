@@ -58,8 +58,6 @@ before(async () => {
 	if (typeof window !== 'undefined')
 		populate();
 
-	console.log(State, process.env);
-
 	State.webfinger = await util.webfinger.discover(State.server, State.account_handle);
 	State.baseURL = State.webfinger.href;
 	State.version = util.webfinger.version(State.webfinger);
