@@ -269,8 +269,7 @@ describe('create', () => {
 	describe('binary file', () => {
 
 		it('returns 200', async () => {
-			const path = 'image.jpg';
-			const put = await State.storage.put(path, await readFile(path), {
+			const put = await State.storage.put(`${ stub.tid() }.jpg`, await readFile('image.jpg'), {
 				'Content-Type': 'image/jpeg; charset=binary',
 			});
 			expect(put.status).to.be.oneOf([200, 201]);
@@ -369,8 +368,8 @@ describe('read', () => {
 	describe('binary file', () => {
 
 		it('returns 200', async () => {
-			const path = 'image.jpg';
-			const data = await readFile(path);
+			const path = `${ stub.tid() }.jpg`;
+			const data = await readFile('image.jpg');
 			await State.storage.put(path, data, {
 				'Content-Type': 'image/jpeg; charset=binary',
 			});
