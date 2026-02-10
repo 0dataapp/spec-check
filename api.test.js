@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { join, dirname, basename } from 'path';
-import util from './util.js'
-import stub from './stub.js'
+import util from './util.js';
+import stub from './stub.js';
 import { readFile } from 'node:fs/promises';
 
 const State = {};
