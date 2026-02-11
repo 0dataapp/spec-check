@@ -87,10 +87,17 @@ after(function () {
 		}));
 	};
 
-	return erase('/', State.storage).then(() => erase('/', util.storage(Object.assign(util.clone(State), {
+	erase('/', State.storage);
+
+	erase('/', util.storage(Object.assign(util.clone(State), {
 		scope: `public/${ State.scope }`,
 		token: State.token_read_write,
-	}))));
+	})));
+
+	erase('/', util.storage(Object.assign(util.clone(State), {
+		token: State.token_global,
+		scope: `${ State.scope }-global/`,
+	})));
 });
 
 describe('OPTIONS', () => {
