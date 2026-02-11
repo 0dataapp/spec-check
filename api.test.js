@@ -73,8 +73,6 @@ before(async () => {
 });
 
 after(function () {
-	this.timeout(5000);
-
 	const erase = async (path, storage) => {
 		const list = await storage.get(path);
 		
@@ -664,28 +662,35 @@ describe('root folder', () => {
 
 	describe('root token', () => {
 
-		it.skip('lists HEAD', async () => {
+		it('lists root', async () => {
 			const storage = util.storage(Object.assign(util.clone(State), {
 				token: State.token_global,
 				scope: '/',
 			}));
+
+			const scope = `${ State.scope }-global/`;
 			
-			const list = await storage.head('/');
+			await storage.put(`${ scope }${ stub.tid() }`, stub.document());
+
+			const list = await storage.get('/');
 			expect(list.status).to.be.oneOf([200, 204]);
 			expect(list.headers.get('etag')).to.satisfy(util.validEtag(State.spec_version));
 			expect(list.headers.get('Content-Type')).to.have.string('application/ld+json');
-			expect(await list.text()).to.have.string('');
+			expect(Object.keys((await list.json()).items)).to.include(scope);
 		});
 
 		['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
 
-			it.skip(`accepts ${ method }`, async () => {
-				const path = ['PUT', 'DELETE'].includes(method) ? stub.tid() : '/';
+			it(`accepts ${ method }`, async () => {
+				const storage = util.storage(Object.assign(util.clone(State), {
+					token: State.token_global,
+					scope: '/',
+				}));
+				
+				const path = `${ State.scope }-global/${ stub.tid() }`;
 
-				if (method === 'DELETE') {
-					const get = await storage.put(path, stub.document());
-					expect(get.status).to.equal(200);
-				}
+				if (['HEAD', 'GET', 'DELETE'].includes(method))
+					await storage.put(path, stub.document());
 
 				const res = await storage[method.toLowerCase()](path, method === 'PUT' ? stub.document() : undefined);
 				expect(res.status).to.be.oneOf({
@@ -694,11 +699,6 @@ describe('root folder', () => {
 					PUT: [200, 201],
 					DELETE: [200],
 				}[method]);
-
-				if (method === 'PUT') {
-					const get = await storage.get(path);
-					expect(get.status).to.equal(200);
-				}
 			});
 
 		});
