@@ -77,6 +77,10 @@ after(function () {
 
 	const erase = async (path, storage) => {
 		const list = await storage.get(path);
+		
+		if (list.status === 404)
+			return
+		
 		const body = await list.json();
 		const entries = Object.entries(State.spec_version >= 2 ? body.items : body);
 		await Promise.all(entries.map(([key, value]) => {
