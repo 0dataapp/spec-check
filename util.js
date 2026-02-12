@@ -31,7 +31,7 @@ const mod = {
 	},
 
 	_fetch () {
-		// console.log(...arguments);
+		// console.log([...arguments]);
 		return fetch(...arguments);
 	},
 
