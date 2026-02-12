@@ -19,7 +19,7 @@ const mod = {
 				resource: `acct:${ account }@${ (new URL(server)).hostname }`,
 			};
 
-			const json = await (await fetch(`${ server }/.well-known/webfinger?${ new URLSearchParams(params) }`)).json();
+			const json = await (await mod._fetch(`${ server }/.well-known/webfinger?${ new URLSearchParams(params) }`)).json();
 
 			return json.links.filter(e => ['remotestorage', 'http://tools.ietf.org/id/draft-dejong-remotestorage'].includes(e.rel)).shift();
 		},
