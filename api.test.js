@@ -105,7 +105,7 @@ describe('OPTIONS', () => {
 	['GET', 'PUT', 'DELETE'].forEach(method => {
 
 		it(`handles ${ method }`, async () => {
-			const origin = stub.origin();
+			const origin = typeof location !== 'undefined' ? location.origin : stub.origin();
 			const res = await State.storage.options(stub.tid(), {
 				'Access-Control-Request-Method': method,
 				origin,
