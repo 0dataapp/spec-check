@@ -104,7 +104,7 @@ describe('OPTIONS', () => {
 
 	['GET', 'PUT', 'DELETE'].forEach(method => {
 
-		(typeof window === 'undefined' ? it : it.skip)(`${ typeof window !== 'undefined' ? '[skipping in browser] ' : '' }handles ${ method }`, async () => {
+		(typeof window === 'undefined' ? it : it.skip)(`${ typeof window !== 'undefined' ? '[skip in browser] ' : '' }` + `handles ${ method }`, async () => {
 			const origin = typeof location !== 'undefined' ? location.origin : stub.origin();
 			const res = await State.storage.options(stub.tid(), {
 				'Access-Control-Request-Method': method,
