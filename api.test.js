@@ -145,9 +145,14 @@ describe('other user', () => {
 	['HEAD', 'GET', 'PUT', 'DELETE'].forEach(method => {
 
 		it(`rejects ${ method }`, async () => {
+			const pattern = new RegExp(`\\/${ process.env.ACCOUNT_HANDLE }$`);
+
+			if (!State.baseURL?.match(pattern))
+				throw new Error('when username is not in webfinger baseURL, set ACCOUNT_HANDLE_ALT');
+
 			const handle = Math.random().toString(36).slice(2);
 			const res = await util.storage(Object.assign(util.clone(State), {
-				baseURL: State.baseURL.replace(new RegExp(`\\/${ process.env.ACCOUNT_HANDLE }$`), `/${ handle }`),
+				baseURL: State.baseURL.replace(pattern, `/${ handle }`),
 				token: State.token_global,
 			}))[method.toLowerCase()](stub.tid(), method === 'PUT' ? stub.document() : undefined);
 			expect(res.status).to.be.oneOf([401, 403]);
