@@ -35,7 +35,7 @@ const mod = {
 		return fetch(...arguments);
 	},
 
-	_url: (State, path) => console.log(State.baseURL , State.scope, {path}) || `${ State.baseURL }${ `${ State.scope ? '/' + State.scope : '' }/${ path }`.replace(/\/+/g, '/') }`,
+	_url: (State, path) => `${ State.baseURL }${ `${ State.scope ? '/' + State.scope : '' }/${ path }`.replace(/\/+/g, '/') }`,
 
 	storage (State) {
 		const headers = {
