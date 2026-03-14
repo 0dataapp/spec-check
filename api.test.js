@@ -406,7 +406,7 @@ describe('list', () => {
 
 	it('handles non-existing', async () => {
 		const list = await State.storage.get(`${ Math.random().toString() }/`);
-		expect(list.status).to.be.oneOf([404, 200]);
+		expect(list.status).to.be(State.spec_version >= 2 ? 200 : 404);
 
 		if (list.status === 200)
 			expect(JSON.stringify(await list.json())).to.be.oneOf([{}, stub.listing()].map(JSON.stringify));
