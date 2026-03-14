@@ -204,9 +204,9 @@ describe('create', () => {
 	Object.entries({
 		'without folder': stub.tid(),
 		'with folder': join(stub.tid(), stub.tid()),
-	}).forEach(([key, path]) => {
+	}).forEach(([key, path]) => describe(key, () => {
 
-		it(`handles ${ key }`, async () => {
+		it('writes', async () => {
 			const put = await State.storage.put(path, stub.document());
 			expect(put.status).to.be.oneOf([200, 201]);
 			expect(put.headers.get('etag')).to.satisfy(util.validEtag(State.spec_version));
@@ -221,7 +221,7 @@ describe('create', () => {
 			expect(list2.headers.get('etag')).not.to.equal(list1.headers.get('etag'));
 		});
 
-	});
+	}));
 
 	describe('If-None-Match header', () => {
 
@@ -302,9 +302,9 @@ describe('read', () => {
 	Object.entries({
 		'without folder': stub.tid(),
 		'with folder': join(stub.tid(), stub.tid()),
-	}).forEach(([key, path]) => {
+	}).forEach(([key, path]) => describe(key, () => {
 
-		it(`handles ${ key }`, async () => {
+		it(`reads ${ key }`, async () => {
 			const item = stub.document();
 			const put = await State.storage.put(path, item);
 			const get = await State.storage.get(path);
@@ -320,7 +320,7 @@ describe('read', () => {
 			expect(await get.text()).to.equal(JSON.stringify(item));
 		});
 
-	});
+	}));
 
 	it('handles HEAD', async () => {
 		const path = stub.tid();
@@ -484,49 +484,45 @@ describe('update', () => {
 	Object.entries({
 		'without folder': stub.tid(),
 		'with folder': join(stub.tid(), stub.tid()),
-	}).forEach(([key, path]) => {
+	}).forEach(([key, path]) => describe(key, () => {
 
-		describe(key, () => {
+		it('overwrites content', async () => {
+			const put1 = await State.storage.put(path, stub.document());
 
-			it('overwrites content', async () => {
-				const put1 = await State.storage.put(path, stub.document());
-
-				const item = stub.document();
-				const put2 = await State.storage.put(path, item);
-				expect(put2.status).to.be.oneOf([200, 201]);
-				expect(put2.headers.get('etag')).to.satisfy(util.validEtag(State.spec_version));
-				expect(put2.headers.get('etag')).not.to.equal(put1.headers.get('etag'));
-				
-				const get = await State.storage.get(path);
-				expect(get.headers.get('etag')).to.equal(put2.headers.get('etag'));
-				
-				checkHeaders({
-					res: get,
-					item,
-				});
-
-				expect(await get.json()).to.deep.equal(item);
+			const item = stub.document();
+			const put2 = await State.storage.put(path, item);
+			expect(put2.status).to.be.oneOf([200, 201]);
+			expect(put2.headers.get('etag')).to.satisfy(util.validEtag(State.spec_version));
+			expect(put2.headers.get('etag')).not.to.equal(put1.headers.get('etag'));
+			
+			const get = await State.storage.get(path);
+			expect(get.headers.get('etag')).to.equal(put2.headers.get('etag'));
+			
+			checkHeaders({
+				res: get,
+				item,
 			});
 
-			it('changes ancestor etags', async () => {
-				await State.storage.put(path, stub.document());
-
-				const folder = `${ dirname(path) }/`;
-				const list1 = await State.storage.get(folder);
-
-				const put = await State.storage.put(path, stub.document());
-				
-				const list2 = await State.storage.get(folder);
-				expect(list2.headers.get('etag')).not.to.equal(list1.headers.get('etag'));
-
-				const body = await list2.json();
-				const entry = (State.spec_version >= 2 ? body.items : body)[basename(path)];
-				expect(`"${ State.spec_version >= 2 ? entry['ETag'] : entry }"`).to.equal(put.headers.get('etag'));
-			});
-
+			expect(await get.json()).to.deep.equal(item);
 		});
 
-	});
+		it('changes ancestor etags', async () => {
+			await State.storage.put(path, stub.document());
+
+			const folder = `${ dirname(path) }/`;
+			const list1 = await State.storage.get(folder);
+
+			const put = await State.storage.put(path, stub.document());
+			
+			const list2 = await State.storage.get(folder);
+			expect(list2.headers.get('etag')).not.to.equal(list1.headers.get('etag'));
+
+			const body = await list2.json();
+			const entry = (State.spec_version >= 2 ? body.items : body)[basename(path)];
+			expect(`"${ State.spec_version >= 2 ? entry['ETag'] : entry }"`).to.equal(put.headers.get('etag'));
+		});
+
+	}));
 
 	describe('If-Match header', () => {
 
@@ -575,42 +571,38 @@ describe('delete', () => {
 	Object.entries({
 		'without folder': stub.tid(),
 		'with folder': join(stub.tid(), stub.tid()),
-	}).forEach(([key, path]) => {
+	}).forEach(([key, path]) => describe(key, () => {
 
-		describe(key, () => {
+		it('removes file', async () => {
+			const put = await State.storage.put(path, stub.document());
 
-			it('removes', async () => {
-				const put = await State.storage.put(path, stub.document());
+			const del = await State.storage.delete(path);
+			expect(del.status).to.be.oneOf([200, 204]);
+			
+			if (State.spec_version >= 2)
+				expect(del.headers.get('etag')).to.equal(put.headers.get('etag'));
 
-				const del = await State.storage.delete(path);
-				expect(del.status).to.be.oneOf([200, 204]);
-				
-				if (State.spec_version >= 2)
-					expect(del.headers.get('etag')).to.equal(put.headers.get('etag'));
-
-				const head = await State.storage.head(path);
-				expect(head.status).to.equal(404);
-			});
-
-			it('changes ancestor etags', async () => {
-				const put = await State.storage.put(path, stub.document());
-
-				const folder = `${ dirname(path) }/`;
-				const listA1 = await State.storage.get(folder);
-				const listB1 = await State.storage.get('/');
-
-				await State.storage.delete(path);
-				
-				const listA2 = await State.storage.get(folder);
-				expect(listA2.headers.get('etag')).not.to.equal(listA1.headers.get('etag'));
-				
-				const listB2 = await State.storage.get('/');
-				expect(listB2.headers.get('etag')).not.to.equal(listB1.headers.get('etag'));
-			});
-
+			const head = await State.storage.head(path);
+			expect(head.status).to.equal(404);
 		});
 
-	});
+		it('changes ancestor etags', async () => {
+			const put = await State.storage.put(path, stub.document());
+
+			const folder = `${ dirname(path) }/`;
+			const listA1 = await State.storage.get(folder);
+			const listB1 = await State.storage.get('/');
+
+			await State.storage.delete(path);
+			
+			const listA2 = await State.storage.get(folder);
+			expect(listA2.headers.get('etag')).not.to.equal(listA1.headers.get('etag'));
+			
+			const listB2 = await State.storage.get('/');
+			expect(listB2.headers.get('etag')).not.to.equal(listB1.headers.get('etag'));
+		});
+
+	}));
 
 	describe('If-Match header', () => {
 
