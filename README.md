@@ -1,6 +1,6 @@
 # spec-check
 
-[remoteStorage REST API](http://tools.ietf.org/html/draft-dejong-remotestorage-22) validator.
+Validate any server against the remoteStorage API spec [remoteStorage REST API](http://tools.ietf.org/html/draft-dejong-remotestorage-13).
 
 https://spec-check.0data.app
 
