@@ -186,12 +186,9 @@ describe('read-only token', () => {
 	['PUT', 'DELETE'].forEach(method => {
 
 		it(`rejects ${ method }`, async () => {
-			const path = stub.tid();
-			const put = await State.storage.put(path, stub.document());
-
 			const res = await util.storage(Object.assign(util.clone(State), {
 				token: State.token_read_only,
-			}))[method.toLowerCase()](path, method === 'PUT' ? stub.document() : undefined);
+			}))[method.toLowerCase()](stub.tid(), method === 'PUT' ? stub.document() : undefined);
 			expect(res.status).to.be.oneOf([401, 403]);
 		});
 
