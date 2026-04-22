@@ -249,7 +249,7 @@ describe('create', () => {
 			const folder = stub.tid();
 			await State.storage.put(join(folder, stub.tid()), stub.document());
 			const put = await State.storage.put(folder, stub.document());
-			// expect(put.status).to.equal(State.spec_version >= 2 ? 409 : 200);
+			expect(put.status).to.equal(State.spec_version >= 2 ? 409 : 200);
 		});
 		
 	});
