@@ -13,6 +13,17 @@ const mod = {
 		items: {},
 	}),
 
+	state: params => Object.assign({
+		server: mod.origin(),
+		account_handle: mod.tid(),
+		scope: 'api-test-suite',
+		token_read_write: mod.tid(),
+		token_read_only: mod.tid(),
+		token_global: mod.tid(),
+		baseURL: mod.origin(),
+		spec_version: 13,
+	}, params || {})
+
 };
 
 export default mod;
