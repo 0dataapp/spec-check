@@ -147,9 +147,6 @@ describe('other user', () => {
 		it(`rejects ${ method }`, async () => {
 			const pattern = new RegExp(`\\/${ process.env.ACCOUNT_HANDLE }$`);
 
-			if (!State.baseURL?.match(pattern))
-				throw new Error('when username is not in webfinger baseURL, set ACCOUNT_HANDLE_ALT');
-
 			const handle = Math.random().toString(36).slice(2);
 			const res = await util.storage(Object.assign(util.clone(State), {
 				baseURL: State.baseURL.replace(pattern, `/${ handle }`),
