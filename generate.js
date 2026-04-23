@@ -459,7 +459,7 @@ describe('update', () => {
 		it('changes ancestor etags', async () => {
 			await State.storage.put(path, stub.document());
 
-			const folder = `${ dirname(path) }/`;
+			const folder = `${ dirname(path) }/`.replace('./', '/');
 			const list1 = await State.storage.get(folder);
 
 			const put = await State.storage.put(path, stub.document());
@@ -539,7 +539,7 @@ describe('delete', () => {
 		it('changes ancestor etags', async () => {
 			const put = await State.storage.put(path, stub.document());
 
-			const folder = `${ dirname(path) }/`;
+			const folder = `${ dirname(path) }/`.replace('./', '/');
 			const listA1 = await State.storage.get(folder);
 			const listB1 = await State.storage.get('/');
 
